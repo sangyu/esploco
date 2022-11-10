@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['esploco']
 
-# %% ../nbs/esploco.ipynb 4
+# %% ../nbs/esploco.ipynb 2
 """
 Created on Wed Mar 18 17:59:42 2020
 @author: Sanguyu Xu
@@ -22,7 +22,7 @@ import dabest
 from .plotTools import setFont
 
 
-# %% ../nbs/esploco.ipynb 5
+# %% ../nbs/esploco.ipynb 3
 class esploco(object):
     def __init__(self, dataFolder, startMin, endMin, companionEspObj=None, initialResamplePeriod=50, smoothing=True, longForm=False):
         self.version = '0.1.5'
