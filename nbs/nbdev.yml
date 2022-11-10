@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "esploco"
+  site-url: "https://sangyu.github.io/esploco"
+  description: "locomotion analysis for espresso"
+  repo-branch: main
+  repo-url: "https://github.com/sangyu/esploco"
