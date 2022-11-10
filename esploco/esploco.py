@@ -21,7 +21,6 @@ from . import plotTools as pt
 import dabest
 from .plotTools import setFont
 
-
 # %% ../nbs/esploco.ipynb 3
 class esploco(object):
     def __init__(self, dataFolder, startMin, endMin, companionEspObj=None, initialResamplePeriod=50, smoothing=True, longForm=False):
