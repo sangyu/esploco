@@ -2,8 +2,8 @@
 
 d = { 'settings': { 'branch': 'main',
                 'doc_baseurl': '/esploco',
-                'doc_host': 'https://sangyu.github.io',
-                'git_url': 'https://github.com/sangyu/esploco',
+                'doc_host': 'https://sangyu\n\nrequirements = matplotlib.github.io',
+                'git_url': 'https://github.com/sangyu\n\nrequirements = matplotlib/esploco',
                 'lib_path': 'esploco'},
   'syms': { 'esploco.esploco': { 'esploco.esploco.esploco': ('esploco.html#esploco', 'esploco/esploco.py'),
                                  'esploco.esploco.esploco.__init__': ('esploco.html#esploco.__init__', 'esploco/esploco.py'),
