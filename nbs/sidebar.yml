@@ -1,0 +1,9 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - esploco.ipynb
+      - locoDataMunger.ipynb
+      - locoPlotters.ipynb
+      - locoUtilities.ipynb
+      - plotTools.ipynb
