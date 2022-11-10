@@ -3,7 +3,11 @@ project:
 
 website:
   title: "esploco"
-  site-url: "https://sangyu.github.io/esploco"
+  site-url: "https://sangyu
+
+requirements = seaborn matplotlib dabest pandas numpy datetime.github.io/esploco"
   description: "locomotion analysis for espresso"
   repo-branch: main
-  repo-url: "https://github.com/sangyu/esploco"
+  repo-url: "https://github.com/sangyu
+
+requirements = seaborn matplotlib dabest pandas numpy datetime/esploco"
