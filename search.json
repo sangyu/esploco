@@ -1,0 +1,93 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "esploco",
+    "section": "",
+    "text": "This is a package that would analyse your countlogs from espresso"
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "esploco",
+    "section": "Install",
+    "text": "Install\npip install esploco"
+  },
+  {
+    "objectID": "index.html#this-code-is-a-bit-slow.-its-in-the-process-of-being-refactored",
+    "href": "index.html#this-code-is-a-bit-slow.-its-in-the-process-of-being-refactored",
+    "title": "esploco",
+    "section": "this code is a bit slow. it’s in the process of being refactored",
+    "text": "this code is a bit slow. it’s in the process of being refactored"
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "esploco",
+    "section": "How to use",
+    "text": "How to use\nDownload a demo dataset from https://drive.google.com/drive/folders/1v-0Y_xNaec4OhzOqzwE8L2Wng8Cn-_vq?usp=share_link\n\nfrom esploco import esploco\n# from espresso import espresso\n\n\n# esplocoPath='D:\\\\xusy\\\\demo'\n# el = esploco.esploco(esplocoPath, 0, 120)\n\n\n# # or if you also have espresso imported \n# e = espresso(esplocoPath, expt_duration_minutes=120)\n# ele = esploco.esploco(esplocoPath, 0, 120, companionEspObj = e)\n\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\xusy\\\\demo/'"
+  },
+  {
+    "objectID": "index.html#you-can-plot-some-small-multiples",
+    "href": "index.html#you-can-plot-some-small-multiples",
+    "title": "esploco",
+    "section": "you can plot some small multiples",
+    "text": "you can plot some small multiples\n\n# el.plotChamberSmallMultiples()\n# ele.plotChamberSmallMultiples()\n\nEspresso Runs found:\n\n['2021-09-16_10-55-50' '2021-09-20_15-39-12']\n\n\n plotting 2021-09-16_10-55-50...\n\n\n plotting 2021-09-20_15-39-12...\n\n\n(array([<Figure size 720x144 with 30 Axes>,\n        <Figure size 720x144 with 30 Axes>], dtype=object),\n array([<Figure size 720x144 with 30 Axes>,\n        <Figure size 720x144 with 30 Axes>], dtype=object))"
+  },
+  {
+    "objectID": "index.html#you-can-plot-some-heat-maps",
+    "href": "index.html#you-can-plot-some-heat-maps",
+    "title": "esploco",
+    "section": "you can plot some heat maps",
+    "text": "you can plot some heat maps\n\n# el.plotMeanHeatMaps(row = 'Status', col = 'Temperature')\n# ele.plotMeanHeatMaps(row = 'Status', col = 'Temperature')\n\n<Figure size 360x748.8 with 0 Axes>"
+  },
+  {
+    "objectID": "index.html#you-can-plot-some-ribbons",
+    "href": "index.html#you-can-plot-some-ribbons",
+    "title": "esploco",
+    "section": "you can plot some ribbons",
+    "text": "you can plot some ribbons\n\n# el.plotBoundedLines(col = 'Temperature', colorBy = 'Status')\n# ele.plotBoundedLines(col = 'Temperature', colorBy = 'Status')\n\n(<Figure size 432x216 with 2 Axes>,\n array([[<AxesSubplot:title={'center':'  Red Light Off'}, ylabel='Average Speed (mm/s)'>,\n         <AxesSubplot:title={'center':'  Red Light On'}>]], dtype=object),\n [<matplotlib.lines.Line2D>,\n  <matplotlib.lines.Line2D>,\n  <matplotlib.lines.Line2D>,\n  <matplotlib.lines.Line2D>],\n [<matplotlib.collections.PolyCollection>,\n  <matplotlib.collections.PolyCollection>,\n  <matplotlib.collections.PolyCollection>,\n  <matplotlib.collections.PolyCollection>])"
+  },
+  {
+    "objectID": "index.html#if-you-have-companion-an-espresso-object-you-can-also-calculate-this",
+    "href": "index.html#if-you-have-companion-an-espresso-object-you-can-also-calculate-this",
+    "title": "esploco",
+    "section": "if you have companion an espresso object you can also calculate this",
+    "text": "if you have companion an espresso object you can also calculate this\n\n# ele.calculatePeriFeedSpeed(e, monitorWindow=120)\n\nrecalculating feed duration for feeds...\n\n[------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------]\nputting feeds back into countlog...\n\n[------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------]\nIndex(['ID', 'Status', 'Genotype', 'Sex', 'MinimumAge', 'MaximumAge', 'Food1',\n       'Food2', 'Temperature', '#Flies', 'Starvedhrs', 'Date',\n       'averageSpeed_mm/s', 'xPosition_mm', 'yPosition_mm', 'inLeftPort',\n       'inRightPort', 'countLogDate', 'feedLogDate', 'ChamberID'],\n      dtype='object')\nIndex(['ChamberID', 'countLogID_Mean', 'FeedDuration_ms_Mean',\n       'FeedDuration_s_Mean', 'FeedSpeed_nl/s_Mean', 'FeedVol_nl_Mean',\n       'FeedVol_µl_Mean', 'RelativeTime_s_Mean', 'Valid_Mean',\n       'Starved hrs_Mean', 'AverageFeedVolumePerFly_µl_Mean',\n       'AverageFeedCountPerFly_Mean', 'AverageFeedSpeedPerFly_µl/s_Mean',\n       '120beforeFeedSpeed_mm/s_Mean', 'duringFeedSpeed_mm/s_Mean',\n       '120afterFeedSpeed_mm/s_Mean', 'revisedFeedDuration_s_Mean',\n       '120duringPercSpeedGain_Mean', '120afterPercSpeedGain_Mean',\n       'revisedFeedDuration_min_Mean', 'FeedDuration_ms_Total',\n       'FeedDuration_s_Total', 'FeedVol_nl_Total', 'FeedVol_µl_Total',\n       'Valid_Total', 'AverageFeedVolumePerFly_µl_Total',\n       'AverageFeedCountPerFly_Total', 'AverageFeedSpeedPerFly_µl/s_Total',\n       'revisedFeedDuration_s_Total', '120duringPercSpeedGain_Total',\n       '120afterPercSpeedGain_Total', 'revisedFeedDuration_min_Total',\n       'duringBeforeSpeedRatio', 'afterBeforeSpeedRatio'],\n      dtype='object')\nplotting PeriFeedDiagonal\nplotting pairedSpeedPlots\ndabest version = 0.3.9999"
+  },
+  {
+    "objectID": "esploco.html",
+    "href": "esploco.html",
+    "title": "esploco",
+    "section": "",
+    "text": "source\n\nesploco\n\n esploco (dataFolder, startMin, endMin, companionEspObj=None,\n          initialResamplePeriod=50, smoothing=True, longForm=False)\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "locoutilities.html",
+    "href": "locoutilities.html",
+    "title": "locoUtilities",
+    "section": "",
+    "text": "source\n\nmakeOutputFolders\n\n makeOutputFolders (dataFolder)\n\n\nsource\n\n\nresampleCountLog\n\n resampleCountLog (countLogDf, countLogName, resampleFrequencyInMs=50,\n                   longForm=False)\n\n\nsource\n\n\nespressoSaveFig\n\n espressoSaveFig (fig, figName, figDate, figDirectory, pngDPI=300,\n                  tp=True)\n\n\nsource\n\n\nespressoWriteDictToCSV\n\n espressoWriteDictToCSV (filename, dict)\n\n\nsource\n\n\ncheckDabestVersion\n\n checkDabestVersion ()\n\n\nsource\n\n\nendProgressbar\n\n endProgressbar ()\n\n\nsource\n\n\ndrawProgressbar\n\n drawProgressbar ()\n\n\nsource\n\n\nstartProgressbar\n\n startProgressbar ()"
+  },
+  {
+    "objectID": "locoplotters.html",
+    "href": "locoplotters.html",
+    "title": "locoPlotters",
+    "section": "",
+    "text": "source\n\nespressoChamberStyling\n\n espressoChamberStyling (ax, axisSwitch='off')\n\n\nsource\n\n\nespressoCreatePalette\n\n espressoCreatePalette (items, testColor='crimson')\n\n\nsource\n\n\nespressoPlotTracking\n\n espressoPlotTracking (X, Y, flyName, colorPalette)\n\n\nsource\n\n\nespressoPlotHeatmap\n\n espressoPlotHeatmap (X, Y, flyGenotype, colorPalette)\n\n\nsource\n\n\nespressoPlotMeanHeatmaps\n\n espressoPlotMeanHeatmaps (espLocoObj, binSize, row, col, reverseRows,\n                           reverseCols, verbose, heatmapCMap, smooth)\n\n\nsource\n\n\nplotBoundedLine\n\n plotBoundedLine (x, Y, ax=None, c='k', resamplePeriod='200s')\n\n\nsource\n\n\nputThingsInToChamberSubplot\n\n putThingsInToChamberSubplot (countLogDf, metaDataDf, portLocationsDf,\n                              customPalette, ncol, plotFunc=<function\n                              espressoPlotTracking>, showID=False)\n\n\nsource\n\n\nplotChamber\n\n plotChamber (ploc, ax)\n\n\nsource\n\n\nsubplotRowColColor\n\n subplotRowColColor (metaDataDf, colorBy, row, col, reverseRows,\n                     reverseCols)\n\n\nsource\n\n\nplotPeriFeedDiagonal\n\n plotPeriFeedDiagonal (locoObj, monitorWindow)\n\n\nsource\n\n\nplotPairedSpeeds\n\n plotPairedSpeeds (locoObj, monitorWindow)\n\n\nsource\n\n\ncreateWesAndersonPalette\n\n createWesAndersonPalette ()\n\n\nsource\n\n\nsetAxesTicks\n\n setAxesTicks (ax, axesState, gridState=False)"
+  },
+  {
+    "objectID": "plottools.html",
+    "href": "plottools.html",
+    "title": "plotTools",
+    "section": "",
+    "text": "source\n\ncorrelationPlot\n\n correlationPlot (x, y, ax=None)\n\n\nsource\n\n\nsetFont\n\n setFont (fontSelection, fontSize, fontWeight='normal')\n\n\nsource\n\n\nplotContrasts\n\n plotContrasts (df, y, colorBy, compareBy, groupBy='Temperature',\n                reverseCompareBy=False, reverseGroupBy=False,\n                customPalette=None, pairedState=False, fontSize=14,\n                plot_kwargs={})\n\n\nsource\n\n\nsavePlots\n\n savePlots (figure, fileName, figureID='', fDPI=300)\n\n\nsource\n\n\nsaveDabestData\n\n saveDabestData (contrast, fileName, exptDataSource, figureID='', unit='')"
+  },
+  {
+    "objectID": "locodatamunger.html",
+    "href": "locodatamunger.html",
+    "title": "locoDataMunger",
+    "section": "",
+    "text": "source\n\nextractDateStr\n\n extractDateStr (s)\n\n\nsource\n\n\nreadMetaAndCount\n\n readMetaAndCount (dataFolder, companionEspObj, startMin, endMin,\n                   initialResamplePeriod, smoothing, longForm=False)\n\n\nsource\n\n\ncalculateSpeedinCountLog\n\n calculateSpeedinCountLog (countLogDf, companionPortLocationsDf,\n                           smoothing, speedThreshold=30,\n                           gaussianWindowSize=10, gaussianSTD=3)\n\n\nsource\n\n\ncalculatePeriFeedLoco\n\n calculatePeriFeedLoco (countLogDf, companionPortLocationsDf,\n                        companionEspObj, exptSum, monitorWindow=120,\n                        startSeconds=0)\n\n\nsource\n\n\nlabelStretches\n\n labelStretches (vector)\n\n\nsource\n\n\ncorrectInPortData\n\n correctInPortData (countLogDf)\n\n\nsource\n\n\nintrapolateUnderThreshold\n\n intrapolateUnderThreshold (s, th)\n\n\nsource\n\n\nassignStatus\n\n assignStatus (metaDataDf)\n\n\nsource\n\n\nfallEvents\n\n fallEvents (countLogDf, nstd=4, windowsize=1000, ewm1=12, ewm2=26,\n             ewm3=9)"
+  }
+]
