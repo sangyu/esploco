@@ -36,57 +36,75 @@ def espressoChamberStyling(ax, axisSwitch = 'off'):
 
 
 # %% ../nbs/locoPlotters.ipynb 5
-def espressoCreatePalette(items, testColor = 'crimson'):
-    wes_palette, wes_colors = createWesAndersonPalette()
+def espressoCreatePalette(items, testColor = 'orangered'):
+    import numpy as np
     keys = np.sort(np.unique(items))[::-1]
     colorPalette = {}
-    colors = wes_palette
+    if 'chrimson' in ''.join(keys):
+        testColor = 'orangered'
+    elif 'acr' in "".join(keys):
+        testColor = 'seagreen'
+        
     n=0
+    ctrlColor = {'orangered':'peachpuff', 'seagreen':'mediumaquamarine'}
     for i in range(len(keys)):
         if 'gal4' in keys[i]:
             if 'w1118' in keys[i]:
-                colorPalette[keys[i]] = wes_colors['black']
+                colorPalette[keys[i]] = 'k'
                 continue
             if 'acr' in keys[i]:
-                colorPalette[keys[i]] = wes_colors['cyan']
+                if 'On' in keys[i]:
+                    colorPalette[keys[i]] = 'seagreen'
+                else:
+                    colorPalette[keys[i]] = 'mediumaquamarine'
                 continue
             if 'chrimson' in keys[i]:
-                colorPalette[keys[i]] = wes_colors['crimson']
+                if 'On' in keys[i]:
+                    colorPalette[keys[i]] = 'orangered'
+                else:
+                    colorPalette[keys[i]] = 'peachpuff'
                 continue
             if 'tetx' in keys[i]:
-                colorPalette[keys[i]] = wes_colors['eggplant']
-                continue
+                colorPalette[keys[i]] = 'violet'
+                continue            
         if 'ms' in keys[i]:
             if 'w1118' in keys[i]:
-                colorPalette[keys[i]] = wes_colors['black']
+                colorPalette[keys[i]] = 'k'
                 continue
             if 'cas' in keys[i]:
-                colorPalette[keys[i]] = wes_colors['cyan']
+                colorPalette[keys[i]] = 'seagreen'
                 continue
         elif 'Ctrl' in keys[i]:
-            colorPalette[keys[i]] = wes_colors['black']
+            if 'On' in keys[i]:
+                colorPalette[keys[i]] = 'k'
+            else:
+                colorPalette[keys[i]] = 'lightgray'
             continue
         elif 'Test' in keys[i]:
-            colorPalette[keys[i]] = wes_colors[testColor]
+            if 'On' in keys[i]:
+                colorPalette[keys[i]] = testColor
+            else:
+                colorPalette[keys[i]] = ctrlColor[testColor]
             continue
         elif 'Light On' in keys[i]:
-            colorPalette[keys[i]] = wes_colors[testColor]
+            colorPalette[keys[i]] = testColor
             continue
         elif 'Light Off' in keys[i]:
-            colorPalette[keys[i]] = wes_colors['black']
+            colorPalette[keys[i]] = 'k'
             continue
         elif keys[i] == 'F':
-            colorPalette[keys[i]] = wes_colors['hotpink']
+            colorPalette[keys[i]] = 'pink'
             continue
         elif keys[i] == 'M':
-            colorPalette[keys[i]] = wes_colors['lakeblue']
+            colorPalette[keys[i]] = 'steelblue'
             continue
         elif keys[i] == 'VF':
-            colorPalette[keys[i]] = wes_colors['eggplant']
+            colorPalette[keys[i]] = 'violet'
             continue
         else:
-            colorPalette[keys[i]] = colors[n]
+            colorPalette[keys[i]] = 'lightgray'
             n += 1
+        
     return colorPalette
 
 
