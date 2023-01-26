@@ -14,16 +14,14 @@ Created on Thu Oct  7 12:45:55 2021
 # 25/08/2021 added gaussian smoothing function for x and y. can input gaussian window size and std
 # 26/08/2021 fixed printout of metadata currently processed in readMetaAndCount
 # 26/01/2021 added fall events
+# 23/01/2023 added stacked plots
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import os
 from . import locoUtilities
 import datetime
 import re
-import matplotlib
-
 
 # %% ../nbs/locoDataMunger.ipynb 4
 def extractDateStr(s):
@@ -277,7 +275,7 @@ def calculateSpeedinCountLog(countLogDf, companionPortLocationsDf, smoothing, sp
 # %% ../nbs/locoDataMunger.ipynb 7
 def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj, exptSum, monitorWindow=120, startSeconds=0):
 
-    feedsRevisedDf = companionEspObj.feeds
+    feedsRevisedDf = companionEspObj.feeds[companionEspObj.feeds.Valid]
     feedsRevisedDf['startMonitorIdx'] = np.nan
     feedsRevisedDf['startFeedIdx'] = np.nan
     feedsRevisedDf['startFeedIdxRevised'] = np.nan
@@ -363,12 +361,22 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     mean_df.reset_index(inplace=True)
     total_df = grouped_df.sum()
     total_df.reset_index(inplace=True)
-    feedResults = pd.merge(mean_df, total_df, how='outer',
-                           on='ChamberID', suffixes=("_Mean", "_Total"))
-    feedResults = feedResults.drop(columns=['countLogID_Total', 'FeedSpeed_nl/s_Total', 'RelativeTime_s_Total',  'Starved hrs_Total',  str(
-        monitorWindow)+'beforeFeedSpeed_mm/s_Total', 'duringFeedSpeed_mm/s_Total', str(monitorWindow)+'afterFeedSpeed_mm/s_Total'])
-    feedResults['duringBeforeSpeedRatio'] = feedResults['duringFeedSpeed_mm/s_Mean'] / \
-        feedResults[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean']
+    first_df = grouped_df.first()
+    first_df.reset_index(inplace=True)
+    first_df = first_df.rename(columns = {'RelativeTime_s': 'Latency_s'})
+    feedResults = pd.merge(mean_df, total_df, how = 'outer', on = 'ChamberID', suffixes=("_Mean", "_Total"))
+    feedResults = pd.merge(feedResults, first_df[['ChamberID', 'Latency_s']], how = 'outer', on = 'ChamberID')
+    feedResults = feedResults.drop(columns=['FeedDuration_ms_Mean', 'FeedDuration_s_Mean', 'FeedSpeed_nl/s_Mean', 
+                                            'FeedVol_nl_Mean', 'AverageFeedCountPerFly_Mean', 
+                                            'FeedDuration_ms_Total', 'FeedDuration_s_Total', 'FeedVol_nl_Total', 
+                                            'Valid_Total','120duringPercSpeedGain_Total',
+                                            '120afterPercSpeedGain_Total', 'countLogID_Total', 'FeedSpeed_nl/s_Total', 
+                                            'RelativeTime_s_Total', 'Starved hrs_Total', 
+                                            str(monitorWindow)+'beforeFeedSpeed_mm/s_Total', 
+                                            'duringFeedSpeed_mm/s_Total', str(monitorWindow)+'afterFeedSpeed_mm/s_Total'])
+    mealSizeColumn = [i for  i, s in enumerate(feedResults.columns) if 'AverageFeedSpeedPerFly_' in s][0]
+    feedResults = feedResults.rename(columns = {'countLogID_Mean': 'countLogID', feedResults.columns[mealSizeColumn]:'MealSize_uL'})
+    feedResults['duringBeforeSpeedRatio'] = feedResults['duringFeedSpeed_mm/s_Mean'] /feedResults[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean']
     feedResults['afterBeforeSpeedRatio'] = feedResults[str(
         monitorWindow)+'afterFeedSpeed_mm/s_Mean'] / feedResults[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean']
     feedVolColumns = [s.replace('_X', '_feedVol_nl')
@@ -416,6 +424,14 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     countLogDfNew = pd.concat([countLogDfNew, cumFeedVol], axis=1)
     maxSpeed = np.ceil(np.nanmax(feedResults[[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean',
                                               'duringFeedSpeed_mm/s_Mean', str(monitorWindow)+'afterFeedSpeed_mm/s_Mean']]))
+    feedsRevisedDf.Status = feedsRevisedDf.Status.str.replace('Sibling', 'Ctrl')
+    feedsRevisedDf.Status = feedsRevisedDf.Status.str.replace('Offspring', 'Test')
+    feedsRevisedDf.Genotype = feedsRevisedDf.Genotype.str.lower()
+    for c in feedResults.columns:
+        if 'mm/s' not in c:
+            if 'Ratio' not in c:
+                if 'Gain' not in c:
+                    feedResults[c].fillna(0, inplace=True)
 
     return feedsRevisedDf, countLogDfNew, feedResults, maxSpeed
 

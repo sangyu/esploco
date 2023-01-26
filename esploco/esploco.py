@@ -160,7 +160,7 @@ class esploco(object):
                 axes[ro, co].set_ylim([np.min(ylims), np.max(ylims)])
             locoPlotters.setAxesTicks(axes[ro, co], True, gridState=False)
 
-        axes[ro, co].legend(plotNames, loc='upper right')
+        axes[ro, co].legend(plotNames, loc='upper right', fontsize = 10)
 
         locoUtilities.espressoSaveFig(
             figure, 'boundedTS_' + locoSuffix + '_', self.metaDataDf.Date[0], self.outputFolder)
@@ -171,9 +171,6 @@ class esploco(object):
 
         self.feedsRevisedDf, self.countLogDf, self.meanPeriSpeed, self.maxSpeed= locoDataMunger.calculatePeriFeedLoco(
             self.countLogDf, self.portLocationsDf, companionEspObj, self.experimentSummary, monitorWindow, startSeconds)
-        self.feedsRevisedDf.Status = self.feedsRevisedDf.Status.str.replace('Sibling', 'Ctrl')
-        self.feedsRevisedDf.Status = self.feedsRevisedDf.Status.str.replace('Offspring', 'Test')
-        self.feedsRevisedDf.Genotype = self.feedsRevisedDf.Genotype.str.lower()
         self.resultsDf['ChamberID'] = self.resultsDf['feedLogDate'] + \
             '_Chamber' + self.resultsDf['ID'].astype(str)
         print(self.resultsDf.columns)
@@ -181,22 +178,19 @@ class esploco(object):
         if str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean' in self.resultsDf.columns:
             self.resultsDf[['ChamberID', str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean', 'duringFeedSpeed_mm/s_Mean',  str( 
                 monitorWindow)+'afterFeedSpeed_mm/s_Mean']] = self.meanPeriSpeed[['ChamberID', str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean', 
-                                                                                  'duringFeedSpeed_mm/s_Mean',  str( 
-                monitorWindow)+'afterFeedSpeed_mm/s_Mean']]
+                                                                                  'duringFeedSpeed_mm/s_Mean',  str(monitorWindow)+'afterFeedSpeed_mm/s_Mean']]
         else:
             self.resultsDf = pd.merge(
                 self.meanPeriSpeed, self.resultsDf, how="outer", on='ChamberID')
-        for c in self.resultsDf.columns:
-            if 'mm/s' not in c:
-                self.resultsDf[c].fillna(0, inplace=True)
 
         self.monitorMin = str(int(monitorWindow/60))+' min'
         self.outputPrefix = self.outputFolder+self.monitorMin
-        
         PeriFeedDiagonal = locoPlotters.plotPeriFeedDiagonal(self, monitorWindow)
         pairedSpeedPlots = locoPlotters.plotPairedSpeeds(self, monitorWindow)
         
-    def plotStacked(self, endMin = 7200, metricsToStack = ['Volume', 'V'], colorBy = 'Genotype', customPalette = None, figsize = None):
+    def plotStacked(self, endMin = 120, metricsToStack = ['Volume', 'Speed'], 
+                    colorBy = 'Genotype', customPalette = None, 
+                    figsize = None, dotratio = 20):
 
         feeds = self.feedsRevisedDf
         if type(colorBy) == list and len(colorBy)>1:
@@ -204,7 +198,13 @@ class esploco(object):
             feeds[''.join(colorBy)] = feeds[colorBy].agg('-'.join, axis=1)
             colorBy = ''.join(colorBy)
         keys = self.metaDataDf[colorBy].unique()
-        feeds_sorted = feeds.loc[feeds.Valid].sort_values(by=['Genotype', 'RelativeTime_s'])
+        shortkeys = [''] * len(keys)
+        for k in range(len(keys)):
+            if 'Red Light' in keys[k]:
+                shortkeys[k] = keys[k].replace('-Red Light', '')
+            elif 'Green Light' in keys[k]:
+                shortkeys[k] = keys[k].replace('-Green Light', '')
+        feeds_sorted = feeds.loc[feeds.Valid].sort_values(by=[colorBy, 'RelativeTime_s'])
         chord = feeds_sorted.ChamberID.reset_index(drop = True)
         _, idx = np.unique(chord, return_index=True)
         chamberLabels = chord[np.sort(idx)]
@@ -215,14 +215,13 @@ class esploco(object):
         metricDict = {'Volume': '_feedVol_nl', 
                       'Count': '_feedCount', 
                       'Duration': '_feedRevisedDuration_s',  
-                     'V': '_V', 
+                     'Speed': '_V', 
                      'Y': '_Y'}
         metricYLabelsDict = {'Volume': 'Feed \nVolume (nL)', 
                       'Count': 'Feed Count', 
                       'Duration': 'Feed \nDuration (s)',  
-                     'V': 'Speed (mm/s)', 
+                     'Speed': 'Speed (mm/s)', 
                      'Y': 'Height (mm)'}
-
         if customPalette == None:
             palette = locoPlotters.espressoCreatePalette(keys)
         else:
@@ -230,52 +229,77 @@ class esploco(object):
         colorByKeys = {k: self.metaDataDf.loc[self.metaDataDf[colorBy] == k].index for k in keys}
         stackedFig, stackedAxes = plt.subplots(nrows = len(metricsToStack)+3, ncols = 1, tight_layout = True)
         gs = stackedAxes[1].get_gridspec()
-
+        
         for ax in stackedAxes[0:3]:
             ax.remove()
         axbig = stackedFig.add_subplot(gs[0:3])
-        axbig.set_ylabel('Fly ID', fontweight = 'semibold')
+#         axbig.set_ylabel('Fly ID', fontweight = 'semibold')
         axbig.plot(feeds_sorted['RelativeTime_s'], feeds_sorted['ChamberID'], 'w.')
         axbig.invert_yaxis()
         for i in range(len(feeds_sorted.index)):
             feed = feeds_sorted.iloc[i, :]
-            if feed['RelativeTime_s']<endMin:
+            if feed['RelativeTime_s']<endMin*60:
                 axbig.plot(feed['RelativeTime_s']/60, feed['ChamberID'], '.', 
-                           color = palette[feed[colorBy]], markerSize = 1+20*feed['FeedVol_nl']/feeds_sorted['FeedVol_nl'].max())
-        axbig.set_xlim(-5, endMin/60*1.05)
+                           color = palette[feed[colorBy]], 
+                           markerSize = 5+dotratio*feed['FeedVol_nl']/feeds_sorted['FeedVol_nl'].max())
+        for k in range(len(keys)):
+            lineIdx = feeds_sorted.loc[feeds_sorted[colorBy] == keys[k]]['ChamberID']
+            uniqueLineIdx = lineIdx.values.unique()
+#             plt.plot([-endMin*0.05, -endMin*0.05], [uniqueLineIdx[0], uniqueLineIdx[-1]], color = palette[keys[k]])
+            plt.text(-endMin*0.03, uniqueLineIdx[round(len(uniqueLineIdx)/2)], shortkeys[k], ha = 'right', 
+                     color = palette[keys[k]], fontsize = 12, fontweight = 'semibold', verticalalignment = 'center')
+        axbig.set_xlim(-endMin*0.02, endMin*1.10)
+        keyDots =[ 0.05, 0.1, 0.2, 0.4]
+        height = np.array(axbig.get_ylim()).max()
+        keyDotsY =[height*0.15, height*0.10,height*0.05,0]
+        for i in range(len(keyDots)):
+            plt.plot(endMin*1.01, keyDotsY[i], '.', markerSize = 5+dotratio*keyDots[i], c = 'k', alpha = 0.4)
+            plt.text(endMin*1.02, keyDotsY[i], str("%.2f" % keyDots[i])+' uL', c = 'k', verticalalignment = 'center')
         s = [lab.get_text().split('ber')[-1] for lab in axbig.get_yticklabels()]
         axbig.set_yticklabels(s)
-        countLogDfRange = self.countLogDf.loc[self.countLogDf.iloc[:, 0]<endMin]
+        axbig.tick_params(
+            axis='y',          # changes apply to the x-axis
+            which='both',      # both major and minor ticks are affected
+            left=False,      # ticks along the bottom edge are off
+            top=False)
+        countLogDfRange = self.countLogDf.loc[self.countLogDf.iloc[:, 0]<endMin*60]
         def ribbonMetric(countLog, metric, colorBy, palette, colorByKeys, ax = None):
-            for k in keys:
+            for k in range(len(keys)):
                 locoPlotters.plotBoundedLine(countLogDfRange.iloc[:, 0]/60, 
-                                             countLogDfRange.filter(regex = metric).iloc[:, colorByKeys[k]], 
-                                             ax = ax, c = palette[k],  resamplePeriod = '60s')
-
+                                             countLogDfRange.filter(regex = metric).iloc[:, colorByKeys[keys[k]]], 
+                                             ax = ax, c = palette[keys[k]],  resamplePeriod = '60s', label = shortkeys[k])
+            
         for [m, mm]  in enumerate(metricsToStack):
-            ribbonMetric(countLogDfRange,  metricDict[mm], colorBy = colorBy,palette = palette, colorByKeys = colorByKeys, ax = stackedAxes[m+3])
+            ribbonMetric(countLogDfRange,  metricDict[mm], colorBy = colorBy,palette = palette, colorByKeys = colorByKeys, 
+                         ax = stackedAxes[m+3])
             stackedAxes[m+3].set_ylabel(metricYLabelsDict[mm], fontweight = 'semibold')
+            stackedAxes[m+3].legend(loc = 'upper right', fontsize = figsize[1]/4)
+            stackedAxes[m+3].set_xlim(-endMin*0.02, endMin*1.10)
 
         for i in range(3, m):
             locoPlotters.setAxesTicks(stackedAxes[i], True, gridState = False)
             stackedAxes[i].set_ylim(0-stackedAxes[i].get_ylim()[1]*0.05, stackedAxes[i].get_ylim()[1])
-            stackedAxes[i].set_xlim(-5, endMin/60*1.05)
+            stackedAxes[i].set_xlim(-5, endMin*1.05)
 
         stackedAxes[-1].set_xlabel('Time (min)', fontweight = 'semibold')
 
         s = [lab.get_text().split('ber')[-1] for lab in axbig.get_yticklabels()]
         axbig.set_yticklabels(s, fontsize = 5)
+        for a in stackedAxes:
+            a.spines[['right', 'top']].set_visible(False)
+
         if figsize == None:
-            stackedFig.set_size_inches(14*self.cm, (12+len(metricToStack)*4)*self.cm)
+            stackedFig.set_size_inches(14*self.cm, (12+len(metricsToStack)*4)*self.cm)
         else:
             stackedFig.set_size_inches(figsize[0]*self.cm, figsize[1]*self.cm)
 
-        stackedFig.suptitle('c', x = 0.1, y = 0.96, horizontalalignment='left', 
+        stackedFig.suptitle('', x = 0.1, y = 0.96, horizontalalignment='left', 
                             verticalalignment='top', fontsize = 20, fontname="Inter", fontweight = 'semibold')
         locoUtilities.espressoSaveFig(
-            stackedFig, 'TimeAligned' + locoSuffix + '_', self.metaDataDf.Date[0], self.outputFolder)
+            stackedFig, 'TimeAligned' + ''.join(metricsToStack), self.metaDataDf.Date[0], self.outputFolder)
 
-        
+        return stackedFig, feeds_sorted, colorBy
+    
     def calculateFallEvents(self, nstd=4, windowsize=1000, ewm1=12, ewm2=26, ewm3=9):
         # added Jan 2022 to detect falls
         print('Detecting Fall Events...')

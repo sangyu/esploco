@@ -53,16 +53,16 @@ def espressoCreatePalette(items, testColor = 'orangered'):
                 colorPalette[keys[i]] = 'k'
                 continue
             if 'acr' in keys[i]:
-                if 'On' in keys[i]:
-                    colorPalette[keys[i]] = 'seagreen'
-                else:
+                if 'Off' in keys[i]:
                     colorPalette[keys[i]] = 'mediumaquamarine'
+                else:
+                    colorPalette[keys[i]] = 'seagreen'
                 continue
             if 'chrimson' in keys[i]:
-                if 'On' in keys[i]:
-                    colorPalette[keys[i]] = 'orangered'
-                else:
+                if 'Off' in keys[i]:
                     colorPalette[keys[i]] = 'peachpuff'
+                else:
+                    colorPalette[keys[i]] = 'orangered'
                 continue
             if 'tetx' in keys[i]:
                 colorPalette[keys[i]] = 'violet'
@@ -75,16 +75,16 @@ def espressoCreatePalette(items, testColor = 'orangered'):
                 colorPalette[keys[i]] = 'seagreen'
                 continue
         elif 'Ctrl' in keys[i]:
-            if 'On' in keys[i]:
-                colorPalette[keys[i]] = 'k'
-            else:
+            if 'Off' in keys[i]:
                 colorPalette[keys[i]] = 'lightgray'
+            else:
+                colorPalette[keys[i]] = 'k'
             continue
         elif 'Test' in keys[i]:
-            if 'On' in keys[i]:
-                colorPalette[keys[i]] = testColor
-            else:
+            if 'Off' in keys[i]:
                 colorPalette[keys[i]] = ctrlColor[testColor]
+            else:
+                colorPalette[keys[i]] = testColor 
             continue
         elif 'Light On' in keys[i]:
             colorPalette[keys[i]] = testColor
@@ -235,7 +235,7 @@ def espressoPlotMeanHeatmaps(espLocoObj, binSize,row, col, reverseRows, reverseC
 
 
 # %% ../nbs/locoPlotters.ipynb 9
-def plotBoundedLine(x, Y, ax=None, c = 'k', resamplePeriod = '200s'):
+def plotBoundedLine(x, Y, ax=None, c = 'k', resamplePeriod = '200s', label = ''):
     if ax is None:
         ax = plt.gca()
     if resamplePeriod:
@@ -243,7 +243,7 @@ def plotBoundedLine(x, Y, ax=None, c = 'k', resamplePeriod = '200s'):
         x = x.resample(resamplePeriod).agg(np.mean)
     y = np.nanmean(Y, axis = 1)
     ci = np.nanstd(Y, axis = 1)/(np.sqrt(Y.shape[1]))*1.96
-    ax.meanLine = ax.plot(x, y, color = c)
+    ax.meanLine = ax.plot(x, y, color = c, label = label)
     ax.ciBound =  ax.fill_between(x, y+ci,  y-ci, color = c, alpha=0.2, label='_nolegend_')
     setAxesTicks(ax, True, gridState = False)
     return(ax)
