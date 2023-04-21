@@ -30,7 +30,7 @@ def extractDateStr(s):
     return dateString, dateTime
 
 
-# %% ../nbs/locoDataMunger.ipynb 6
+# %% ../nbs/locoDataMunger.ipynb 5
 def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResamplePeriod, smoothing, longForm=False):
     filelist = os.listdir(dataFolder)
     countLogList = [s for s in filelist if s.startswith('CountLog')]
@@ -199,7 +199,7 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
 
 
 
-# %% ../nbs/locoDataMunger.ipynb 7
+# %% ../nbs/locoDataMunger.ipynb 6
 def calculateSpeedinCountLog(countLogDf, companionPortLocationsDf, smoothing, speedThreshold=30, gaussianWindowSize=10, gaussianSTD=3):
     xconv = companionPortLocationsDf.XmmPerPix[0]
     yconv = companionPortLocationsDf.YmmPerPix[0]
@@ -272,7 +272,7 @@ def calculateSpeedinCountLog(countLogDf, companionPortLocationsDf, smoothing, sp
 
 
 
-# %% ../nbs/locoDataMunger.ipynb 8
+# %% ../nbs/locoDataMunger.ipynb 7
 def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj, exptSum, monitorWindow=120, startSeconds=0):
 
     feedsRevisedDf = companionEspObj.feeds[companionEspObj.feeds.Valid]
@@ -473,7 +473,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
 
 
 
-# %% ../nbs/locoDataMunger.ipynb 9
+# %% ../nbs/locoDataMunger.ipynb 8
 def labelStretches(vector):
     vectorCopy = vector
     invVector = 1 - vector
@@ -512,7 +512,7 @@ def labelStretches(vector):
     return vectorCopy, idxMat
 
 
-# %% ../nbs/locoDataMunger.ipynb 10
+# %% ../nbs/locoDataMunger.ipynb 9
 def correctInPortData(countLogDf):
     for column in countLogDf.filter(regex='InLeftPort').columns:
         column
@@ -526,7 +526,7 @@ def correctInPortData(countLogDf):
     return countLogDf
 
 
-# %% ../nbs/locoDataMunger.ipynb 11
+# %% ../nbs/locoDataMunger.ipynb 10
 def intrapolateUnderThreshold(s, th):
     sOverTh = np.array([i for i, x in enumerate(s) if x != 'NaN' and x > th])
     # print('removed indices ' + str(sOverTh))
@@ -537,7 +537,7 @@ def intrapolateUnderThreshold(s, th):
     return s
 
 
-# %% ../nbs/locoDataMunger.ipynb 12
+# %% ../nbs/locoDataMunger.ipynb 11
 def assignStatus(metaDataDf):
     if 'Status' not in metaDataDf.columns:
         metaDataDf.insert(1, 'Status', metaDataDf.Genotype, True)
@@ -550,7 +550,7 @@ def assignStatus(metaDataDf):
     return metaDataDf
 
 
-# %% ../nbs/locoDataMunger.ipynb 13
+# %% ../nbs/locoDataMunger.ipynb 12
 def fallEvents(countLogDf, nstd=4, windowsize=1000, ewm1=12, ewm2=26, ewm3=9):
     # added Jan 2022 to detect falls
     yy = countLogDf.filter(regex='_Y')
