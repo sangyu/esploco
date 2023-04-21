@@ -30,10 +30,10 @@ def extractDateStr(s):
     return dateString, dateTime
 
 
-# %% ../nbs/locoDataMunger.ipynb 5
+# %% ../nbs/locoDataMunger.ipynb 6
 def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResamplePeriod, smoothing, longForm=False):
     filelist = os.listdir(dataFolder)
-    countLogList = [s for s in filelist if "CountLog" in s]
+    countLogList = [s for s in filelist if s.startswith('CountLog')]
     if countLogList:
         countLogList = np.sort(countLogList)
         print('countLog files found: \n')
@@ -41,7 +41,7 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
     else:
         print('Warning: no countLog files')
         exit()
-    metaDataList = [s for s in filelist if "MetaData" in s]
+    metaDataList = [s for s in filelist if s.startswith('MetaData')]
     if metaDataList:
         metaDataList = np.sort(metaDataList)
         print('\nmetaData files found: \n')
@@ -49,7 +49,7 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
     else:
         print('Warning: no metaData files')
         exit()
-    portLocationsList = [s for s in filelist if "PortLocations" in s]
+    portLocationsList = [s for s in filelist if s.startswith('PortLocations')]
     if portLocationsList:
         portLocationsList = np.sort(portLocationsList)
         print('portLocations files found: \n')
@@ -58,7 +58,7 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
         print('Warning: no portlocations files')
         exit()
 
-    feedLogList = [s for s in filelist if "FeedLog" in s]
+    feedLogList = [s for s in filelist if s.startswith('FeedLog')]
     if feedLogList:
         feedLogList = np.sort(feedLogList)
         print('\nfeedLog files found: \n')
@@ -199,7 +199,7 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
 
 
 
-# %% ../nbs/locoDataMunger.ipynb 6
+# %% ../nbs/locoDataMunger.ipynb 7
 def calculateSpeedinCountLog(countLogDf, companionPortLocationsDf, smoothing, speedThreshold=30, gaussianWindowSize=10, gaussianSTD=3):
     xconv = companionPortLocationsDf.XmmPerPix[0]
     yconv = companionPortLocationsDf.YmmPerPix[0]
@@ -272,21 +272,21 @@ def calculateSpeedinCountLog(countLogDf, companionPortLocationsDf, smoothing, sp
 
 
 
-# %% ../nbs/locoDataMunger.ipynb 7
+# %% ../nbs/locoDataMunger.ipynb 8
 def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj, exptSum, monitorWindow=120, startSeconds=0):
 
     feedsRevisedDf = companionEspObj.feeds[companionEspObj.feeds.Valid]
-    feedsRevisedDf['startMonitorIdx'] = np.nan
-    feedsRevisedDf['startFeedIdx'] = np.nan
-    feedsRevisedDf['startFeedIdxRevised'] = np.nan
-    feedsRevisedDf['endFeedIdx'] = np.nan
-    feedsRevisedDf['endFeedIdxRevised'] = np.nan
-    feedsRevisedDf['endMonitorIdx'] = np.nan
-    feedsRevisedDf[str(monitorWindow)+'beforeFeedSpeed_mm/s'] = np.nan
-    feedsRevisedDf['duringFeedSpeed_mm/s'] = np.nan
-    feedsRevisedDf[str(monitorWindow)+'afterFeedSpeed_mm/s'] = np.nan
-    feedsRevisedDf['revisedFeedDuration_s'] = np.nan
-    feedsRevisedDf['countLogID'] = np.nan
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startMonitorIdx',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startFeedIdx',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startFeedIdxRevised',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'endFeedIdx',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'endFeedIdxRevised',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'endMonitorIdx',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),str(monitorWindow)+'beforeFeedSpeed_mm/s',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'duringFeedSpeed_mm/s',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),str(monitorWindow)+'afterFeedSpeed_mm/s',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'revisedFeedDuration_s',np.nan)
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'countLogID',np.nan)
 
     feedsRevisedDf = feedsRevisedDf.drop(labels=feedsRevisedDf.loc[np.isnan(
         feedsRevisedDf['FeedDuration_s'])].index, axis=0)
@@ -338,8 +338,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
             feedsRevisedDf.loc[i, 'endFeedIdx'] = endFeedIdx
             feedsRevisedDf.loc[i, 'endFeedIdxRevised'] = endFeedIdx1
             feedsRevisedDf.loc[i, 'endMonitorIdx'] = endMonitorIdx
-            feedsRevisedDf.loc[i,
-                               'revisedFeedDuration_s'] = endFeedTime1 - startFeedTime1
+            feedsRevisedDf.loc[i,'revisedFeedDuration_s'] = endFeedTime1 - startFeedTime1
             vb = np.nanmean(v[startMonitorIdx:startFeedIdx1])
             vd = np.nanmean(v[startFeedIdx1:endFeedIdx1])
             va = np.nanmean(v[endFeedIdx1:endMonitorIdx])
@@ -354,32 +353,69 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
                                'afterPercSpeedGain'] = ((va - vb)/vb)*100
             locoUtilities.drawProgressbar()
     locoUtilities.endProgressbar()
-
     feedsRevisedDf['revisedFeedDuration_min'] = feedsRevisedDf['revisedFeedDuration_s']/60
+    feedsRevisedDf['FeedVol_pl'] = feedsRevisedDf['FeedVol_nl']*1000
     grouped_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID'])
-    mean_df = grouped_df.mean()
+    mean_df = grouped_df.mean(numeric_only=False)
     mean_df.reset_index(inplace=True)
-    total_df = grouped_df.sum()
+    total_df = grouped_df.sum(numeric_only=False)
     total_df.reset_index(inplace=True)
     first_df = grouped_df.first()
     first_df.reset_index(inplace=True)
     first_df = first_df.rename(columns = {'RelativeTime_s': 'Latency_s'})
     feedResults = pd.merge(mean_df, total_df, how = 'outer', on = 'ChamberID', suffixes=("_Mean", "_Total"))
     feedResults = pd.merge(feedResults, first_df[['ChamberID', 'Latency_s']], how = 'outer', on = 'ChamberID')
-    feedResults = feedResults.drop(columns=['FeedDuration_ms_Mean', 'FeedDuration_s_Mean', 'FeedSpeed_nl/s_Mean', 
-                                            'FeedVol_nl_Mean', 'AverageFeedCountPerFly_Mean', 
-                                            'FeedDuration_ms_Total', 'FeedDuration_s_Total', 'FeedVol_nl_Total', 
-                                            'Valid_Total','120duringPercSpeedGain_Total',
-                                            '120afterPercSpeedGain_Total', 'countLogID_Total', 'FeedSpeed_nl/s_Total', 
-                                            'RelativeTime_s_Total', 'Starved hrs_Total', 
+    feedResults = feedResults.drop(columns=[ 'revisedFeedDuration_min_Mean',
+                                             'revisedFeedDuration_s_Total',
+                                            '120duringPercSpeedGain_Mean',
+                                            '120afterPercSpeedGain_Mean',
+                                            'RelativeTime_s_Mean',
+                                            'Valid_Mean', 
+                                            'FeedVol_µl_Mean',
+                                            'FeedVol_pl_Mean',
+                                            'FeedDuration_ms_Mean',
+                                            'FeedDuration_s_Mean', 
+                                            'FeedSpeed_nl/s_Mean', 
+                                            'FeedVol_nl_Mean', 
+                                            'AverageFeedCountPerFly_Mean', 
+                                            'FeedDuration_ms_Total',
+                                            'FeedDuration_s_Total', 
+                                            'FeedVol_nl_Total', 
+                                            'Valid_Total',
+                                            str(monitorWindow)+'duringPercSpeedGain_Total',
+                                            str(monitorWindow)+'afterPercSpeedGain_Total', 
+                                            'countLogID_Total', 
+                                            'FeedSpeed_nl/s_Total', 
+                                            'RelativeTime_s_Total', 
+                                            'Starved hrs_Total', 
                                             str(monitorWindow)+'beforeFeedSpeed_mm/s_Total', 
-                                            'duringFeedSpeed_mm/s_Total', str(monitorWindow)+'afterFeedSpeed_mm/s_Total'])
-    mealSizeColumn = [i for  i, s in enumerate(feedResults.columns) if 'AverageFeedSpeedPerFly_' in s][0]
-    feedResults = feedResults.rename(columns = {'countLogID_Mean': 'countLogID', feedResults.columns[mealSizeColumn]:'MealSize_uL'})
-    feedResults['duringBeforeSpeedRatio'] = feedResults['duringFeedSpeed_mm/s_Mean'] /feedResults[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean']
-    feedResults['afterBeforeSpeedRatio'] = feedResults[str(
-        monitorWindow)+'afterFeedSpeed_mm/s_Mean'] / feedResults[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean']
-    feedVolColumns = [s.replace('_X', '_feedVol_nl')
+                                            'duringFeedSpeed_mm/s_Total', 
+                                            str(monitorWindow)+'afterFeedSpeed_mm/s_Total',
+                                              'AverageFeedSpeedPerFly_µl/s_Total',
+                                              'FeedVol_µl_Total', 
+                                            'countLogID_Mean'])
+                                            
+                                             
+    mealSizeColumn = [i for  i, s in enumerate(feedResults.columns) if ('AverageFeedVolumePerFly_' in s) & ('Mean' in s )][0]
+    feedResults['Latency_s'] = feedResults['Latency_s']/60
+    feedResults = feedResults.rename(
+        columns = {'Starved hrs_Mean':'Starved hrs',
+                   feedResults.columns[mealSizeColumn]:'MealSizePerFly_µL',
+                   str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean': 'MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s',
+                   'duringFeedSpeed_mm/s_Mean': 'MeanSpeedDuringFeed_mm/s',
+                   str(monitorWindow)+'afterFeedSpeed_mm/s_Mean': 'MeanSpeed'+str(monitorWindow)+'sAfterFeed_mm/s',
+                   'revisedFeedDuration_s_Mean': 'MeanMealDurationPerFly_s',
+                   'revisedFeedDuration_min_Total': 'AverageFeedDurationPerFly_min',
+                   'AverageFeedCountPerFly_Total': 'AverageFeedCountPerFly',
+                    'AverageFeedVolumePerFly_µl_Total': 'AverageFeedVolumePerFly_µl',
+                    'AverageFeedSpeedPerFly_µl/s_Mean': 'AverageFeedSpeedPerFly_µl/s',
+                    'Latency_s': 'Latency_min',
+                    'FeedVol_pl_Total': 'FeedVol_pl'
+                  })
+    feedResults['duringBeforeSpeedRatio'] = feedResults['MeanSpeedDuringFeed_mm/s'] /feedResults['MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s']
+    feedResults['afterBeforeSpeedRatio'] = feedResults['MeanSpeed'+str(monitorWindow)+'sAfterFeed_mm/s'] / feedResults['MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s']
+    
+    feedVolColumns = [s.replace('_X', '_feedVol_pl')
                       for s in countLogDf.filter(regex='_X').columns]
     feedCountColumns = [s.replace('_X', '_feedCount')
                         for s in countLogDf.filter(regex='_X').columns]
@@ -389,7 +425,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
                      for s in countLogDf.filter(regex='_X').columns]
     countLogDfNew = countLogDf
     countLogDfNew.drop(list(countLogDfNew.filter(
-        regex='_feedVol_nl')), axis=1, inplace=True)
+        regex='_feedVol_pl')), axis=1, inplace=True)
     countLogDfNew.drop(list(countLogDfNew.filter(
         regex='_feedCount')), axis=1, inplace=True)
     countLogDfNew.drop(list(countLogDfNew.filter(
@@ -404,7 +440,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
         countLogID = feedsRevisedDf.loc[i, 'countLogID']
         endFeedIdxRevised = feedsRevisedDf.loc[i, 'endFeedIdxRevised']
         countLogDfNew.loc[endFeedIdxRevised, countLogID +
-                          '_feedVol_nl'] = feedsRevisedDf.loc[i, 'FeedVol_nl']
+                          '_feedVol_pl'] = feedsRevisedDf.loc[i, 'FeedVol_nl']*1000
         countLogDfNew.loc[endFeedIdxRevised, countLogID+'_feedCount'] = 1
         countLogDfNew.loc[endFeedIdxRevised, countLogID +
                           '_feedRevisedDuration_s'] = feedsRevisedDf.loc[i, 'revisedFeedDuration_s']
@@ -422,8 +458,8 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     # print(cumVolColumns)
     cumFeedVol.columns = cumVolColumns
     countLogDfNew = pd.concat([countLogDfNew, cumFeedVol], axis=1)
-    maxSpeed = np.ceil(np.nanmax(feedResults[[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean',
-                                              'duringFeedSpeed_mm/s_Mean', str(monitorWindow)+'afterFeedSpeed_mm/s_Mean']]))
+    maxSpeed = np.ceil(np.nanmax(feedResults[['MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s',
+                                              'MeanSpeedDuringFeed_mm/s', 'MeanSpeed'+str(monitorWindow)+'sAfterFeed_mm/s']]))
     feedsRevisedDf.Status = feedsRevisedDf.Status.str.replace('Sibling', 'Ctrl')
     feedsRevisedDf.Status = feedsRevisedDf.Status.str.replace('Offspring', 'Test')
     feedsRevisedDf.Genotype = feedsRevisedDf.Genotype.str.lower()
@@ -432,12 +468,12 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
             if 'Ratio' not in c:
                 if 'Gain' not in c:
                     feedResults[c].fillna(0, inplace=True)
-
+    
     return feedsRevisedDf, countLogDfNew, feedResults, maxSpeed
 
 
 
-# %% ../nbs/locoDataMunger.ipynb 8
+# %% ../nbs/locoDataMunger.ipynb 9
 def labelStretches(vector):
     vectorCopy = vector
     invVector = 1 - vector
@@ -476,7 +512,7 @@ def labelStretches(vector):
     return vectorCopy, idxMat
 
 
-# %% ../nbs/locoDataMunger.ipynb 9
+# %% ../nbs/locoDataMunger.ipynb 10
 def correctInPortData(countLogDf):
     for column in countLogDf.filter(regex='InLeftPort').columns:
         column
@@ -490,7 +526,7 @@ def correctInPortData(countLogDf):
     return countLogDf
 
 
-# %% ../nbs/locoDataMunger.ipynb 10
+# %% ../nbs/locoDataMunger.ipynb 11
 def intrapolateUnderThreshold(s, th):
     sOverTh = np.array([i for i, x in enumerate(s) if x != 'NaN' and x > th])
     # print('removed indices ' + str(sOverTh))
@@ -501,7 +537,7 @@ def intrapolateUnderThreshold(s, th):
     return s
 
 
-# %% ../nbs/locoDataMunger.ipynb 11
+# %% ../nbs/locoDataMunger.ipynb 12
 def assignStatus(metaDataDf):
     if 'Status' not in metaDataDf.columns:
         metaDataDf.insert(1, 'Status', metaDataDf.Genotype, True)
@@ -514,7 +550,7 @@ def assignStatus(metaDataDf):
     return metaDataDf
 
 
-# %% ../nbs/locoDataMunger.ipynb 12
+# %% ../nbs/locoDataMunger.ipynb 13
 def fallEvents(countLogDf, nstd=4, windowsize=1000, ewm1=12, ewm2=26, ewm3=9):
     # added Jan 2022 to detect falls
     yy = countLogDf.filter(regex='_Y')
@@ -522,7 +558,6 @@ def fallEvents(countLogDf, nstd=4, windowsize=1000, ewm1=12, ewm2=26, ewm3=9):
     vy = countLogDf.filter(regex='_vY')
     omega = pd.DataFrame(data=np.arctan(vx.values/vy.values), index=vy.index,
                          columns=[c.split('_v')[0] + '_AV' for c in vy.columns])
-
     exp1 = vy.ewm(span=ewm1, adjust=False).mean()
     exp2 = vy.ewm(span=ewm2, adjust=False).mean()
     macd = exp1-exp2
@@ -533,7 +568,6 @@ def fallEvents(countLogDf, nstd=4, windowsize=1000, ewm1=12, ewm2=26, ewm3=9):
     locoUtilities.startProgressbar()
     for i in range(0, macd.shape[1]):
 #         print(i)
-
         a[:, i], b = labelStretches(macd.iloc[:, i]-exp3.iloc[:, i] < -0.025)
         n = 1
         for j in range(0, len(b)):
@@ -547,17 +581,15 @@ def fallEvents(countLogDf, nstd=4, windowsize=1000, ewm1=12, ewm2=26, ewm3=9):
                     n = n + 1        
         locoUtilities.drawProgressbar()
     locoUtilities.endProgressbar()
-
     falls = pd.DataFrame(data=aa, index=vy.index, columns=[
                          c.split('_v')[0] + '_Falls' for c in vy.columns])
     countLogDf.drop(list(countLogDf.filter(regex='_AV')), axis=1, inplace=True)
     countLogDf.drop(list(countLogDf.filter(regex='_Falls')),
                     axis=1, inplace=True)
-
     newCountLog = pd.concat(
         [countLogDf.iloc[:, [0, 1, 2]], omega, falls], axis=1)
     newCountLog = pd.concat([countLogDf, omega, falls], axis=1)
-    return falls, newCountLog, macd
+    return falls, newCountLog
 
 
 

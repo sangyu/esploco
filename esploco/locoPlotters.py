@@ -196,9 +196,9 @@ def espressoPlotMeanHeatmaps(espLocoObj, binSize,row, col, reverseRows, reverseC
     # resultsDf['TB Preference'] = (resultsDf['right'] + resultsDf['left'] - resultsDf['bottom'])/ (resultsDf['bottom']+resultsDf['right']+resultsDf['left'])
     vmin = min(image.get_array().min() for image in images)
     vmax = max(image.get_array().max() for image in images)
-    norm = colors.Normalize(vmin=vmin, vmax=vmax)
-    for im in images:
-        im.set_norm(norm)
+#     norm = colors.Normalize(vmin=vmin, vmax=vmax)
+#     for im in images:
+#         im.set_norm(norm)
     # axins = inset_axes(axes[-1, -1],
     #                width="5%",  # width = 5% of parent_bbox width
     #                height="100%",  # height : 50%
@@ -215,14 +215,21 @@ def espressoPlotMeanHeatmaps(espLocoObj, binSize,row, col, reverseRows, reverseC
     # meanHeatmapFig.add_axes(cax)
     cax = meanHeatmapFig.add_axes([axes[0, 0].get_position().x0, 0.08, axes[-1, -1].get_position().x1-axes[0, 0].get_position().x0, 0.02])
     # meanHeatmapFig.colorbar(images[-1], cax=axins, ticks=[0, 5, 10, 15, 20])
-    def update(changed_image):
-        for im in images:
-            if (changed_image.get_cmap() != im.get_cmap()
-                    or changed_image.get_clim() != im.get_clim()):
-                im.set_cmap(changed_image.get_cmap())
-                im.set_clim(changed_image.get_clim())
-    for im in images:
-        im.callbacksSM.connect('changed', update)
+    class ImageFollower(object):
+        'update image in response to changes in clim or cmap on another image'
+
+        def __init__(self, follower):
+            self.follower = follower
+
+        def __call__(self, leader):
+            self.follower.set_cmap(leader.get_cmap())
+            self.follower.set_clim(leader.get_clim())
+
+    norm = colors.Normalize(vmin=vmin, vmax=vmax)
+    for i, im in enumerate(images):
+        im.set_norm(norm)
+        if i > 0:
+            images[0].callbacksSM.connect('changed', ImageFollower(im))
     meanHeatmapFig.colorbar(images[-1], cax=cax, orientation = 'horizontal')
     plt.show()
     meanHeatmapFileName = 'meanHeatmapFig'+ '_' + str(col) + '_' + str(row) + str(espLocoObj.startMin) + '-' + str(espLocoObj.endMin) + 'min'
@@ -377,10 +384,9 @@ def plotPeriFeedDiagonal(locoObj, monitorWindow):
 
     PeriFeedDiagonal = plt.figure(figsize=(5, 5))
     plt.plot([0, locoObj.maxSpeed], [0, locoObj.maxSpeed], 'lightgray')
-    plt.plot(locoObj.meanPeriSpeed[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean'],
-             locoObj.meanPeriSpeed['duringFeedSpeed_mm/s_Mean'], '.', c='steelblue', label='Speed during feed')
-    plt.plot(locoObj.meanPeriSpeed[str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean'], locoObj.meanPeriSpeed[str(monitorWindow) +
-             'afterFeedSpeed_mm/s_Mean'], '.', c='orangered', label='Speed ' + locoObj.monitorMin + ' after feed')
+    plt.plot(locoObj.meanPeriSpeed['MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s'],
+             locoObj.meanPeriSpeed['MeanSpeedDuringFeed_mm/s'], '.', c='steelblue', label='Speed during feed')
+    plt.plot(locoObj.meanPeriSpeed['MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s'], locoObj.meanPeriSpeed['MeanSpeed'+str(monitorWindow)+'sAfterFeed_mm/s'], '.', c='orangered', label='Speed ' + locoObj.monitorMin + ' after feed')
     plt.xlabel('Speed Before Feed (mm/s)')
     plt.xlim(0, locoObj.maxSpeed)
     plt.ylim(0, locoObj.maxSpeed)
@@ -394,10 +400,11 @@ def plotPeriFeedDiagonal(locoObj, monitorWindow):
 def plotPairedSpeeds(locoObj, monitorWindow):
     print('plotting pairedSpeedPlots')
 
-    speedMatrix = locoObj.resultsDf[['ChamberID', 'Genotype', 'Status', 'Temperature', str(
-    monitorWindow) + 'beforeFeedSpeed_mm/s_Mean', 'duringFeedSpeed_mm/s_Mean', str(monitorWindow) + 'afterFeedSpeed_mm/s_Mean']]
-    speedMatrix = speedMatrix.rename(columns={str(monitorWindow) + 'beforeFeedSpeed_mm/s_Mean': "Before",
-                  "duringFeedSpeed_mm/s_Mean": "During", str(monitorWindow) + 'afterFeedSpeed_mm/s_Mean': 'After'})
+    speedMatrix = locoObj.resultsDf[['ChamberID', 'Genotype', 'Status', 'Temperature',
+                                     'MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s', 
+                                     'MeanSpeedDuringFeed_mm/s', 'MeanSpeed'+str(monitorWindow)+'sAfterFeed_mm/s']]
+    speedMatrix = speedMatrix.rename(columns={'MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s': "Before",
+                  'MeanSpeedDuringFeed_mm/s': "During", 'MeanSpeed'+str(monitorWindow)+'sAfterFeed_mm/s': 'After'})
     
     speedMatrixMelted = speedMatrix.melt(id_vars=['ChamberID', 'Genotype', 'Status', 'Temperature'],
                 value_vars=[
@@ -438,7 +445,7 @@ def plotPairedSpeeds(locoObj, monitorWindow):
                                                 x='SpeedEpoch',
                                                 idx=tuple(
                                                     speedMatrix1['SpeedEpoch'].unique()),
-                                                paired='sequential')
+                                                paired='baseline')
                 speedCompare[i, j].mean_diff.plot(ax=_axes[i, j])
     swarmRange = [_axes[i, j].get_ylim()
                     for i in range(0, len(_axes)) for j in range(0, len(_axes[0]))]
