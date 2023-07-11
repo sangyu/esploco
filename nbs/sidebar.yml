@@ -1,10 +1,8 @@
 website:
   sidebar:
     contents:
-      - index.ipynb
-      - 00 index.ipynb
-      - 01 API.ipynb
-      - 02 HelperFunctions.ipynb
+      - 01 Tutorial.ipynb
+      - 02 API.ipynb
       - esploco.ipynb
       - locoDataMunger.ipynb
       - locoPlotters.ipynb
