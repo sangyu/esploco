@@ -104,7 +104,7 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
 #   LeftPortY = the bottom of the left feed port
 #   etc
 
-    bigPortLocationsDf = pd.DataFrame()
+    allPortLocationsDf = pd.DataFrame()
     for dataSetNumber in range(0, len(portLocationsList)):
         portLocationsDf = pd.read_csv(
             dataFolder + portLocationsList[dataSetNumber])
@@ -135,18 +135,19 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
             portLocationsDf['LeftPortYConv'])]
         portLocationsDf['LeftPortXConvDev'] = portLocationsDf['LeftPortXConv'] - meanLeftPort[0]
         portLocationsDf['LeftPortYConvDev'] = portLocationsDf['LeftPortYConv'] - meanLeftPort[1]
-        bigPortLocationsDf = pd.concat(
-            [bigPortLocationsDf, portLocationsDf], axis=0)
+        allPortLocationsDf = pd.concat(
+            [allPortLocationsDf, portLocationsDf], axis=0)
 
     bigCountLogDf = pd.DataFrame()
     bigMetaDataDf = pd.DataFrame()
+    bigPortLocationsDf = pd.DataFrame()
     for dataSetNumber in range(0, len(countLogList)):
         print(countLogList[dataSetNumber])
         experimentEntry = experimentSummary.loc[experimentSummary['countLogFile']
                                                 == countLogList[dataSetNumber]]
         companionMetaData = experimentEntry['metaDataFile'].iloc[0]
         print(companionMetaData)
-        companionPortLocationsDf = bigPortLocationsDf.loc[bigPortLocationsDf.Date == extractDateStr(
+        companionPortLocationsDf = allPortLocationsDf.loc[allPortLocationsDf.Date == extractDateStr(
             experimentEntry['portLocationsFile'].iloc[0])[0]]
         metaDataDf = pd.read_csv(dataFolder + companionMetaData)
         reader = pd.read_csv(
@@ -159,17 +160,40 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
         if len(diffID) > 0:
             print('MetaData is missing IDs ' + str(np.sort(list(diffID))))
         for id in diffID:
-            todrop = countLogDfUnselected.filter(regex='Ch'+str(id)).columns
+            todrop = countLogDfUnselected.filter(regex='Ch'+str(id)+'_').columns
             countLogDfUnselected = countLogDfUnselected.drop(
                 todrop.tolist(), axis=1)
-        companionPortLocationsDf = companionPortLocationsDf.loc[companionPortLocationsDf.index.isin(
-            metaDataDf.index)]
+        print('#Flies matching...')
+        companionPortLocationsDf.insert(0, "ID", companionPortLocationsDf.index+1)
+        companionPortLocationsDf = companionPortLocationsDf.loc[companionPortLocationsDf['ID'].isin(
+            metaDataDf['ID'])]
+        metaDataObjDf = metaDataDf
+        metaDataObjDf.insert(1, "Obj", 1)
+        companionPortLocationsObjDf = companionPortLocationsDf
+        companionPortLocationsObjDf.insert(1, "Obj", 1)
+        for id in existingIDs:
+            countNo = int(len(countLogDfUnselected.filter(regex='Ch'+str(id)+'_Obj').columns)/5)
+            metaNo = metaDataDf.loc[metaDataDf.ID == id]['#Flies'].iloc[0]
+            if countNo != metaNo:
+                print('CountLog ID ' + str(id) +'has a different number of flies ('+ 
+                      str(countNo) + ')from MetaData ID ' + str(id) + '(' + str(metaNo) + ')')
+            else:
+                print('Chamber ID '+ str(id) +' match')
+            if metaNo > 1:
+                for i in range(1, metaNo):
+                    metaDataObjDf = pd.concat([metaDataObjDf, metaDataObjDf.loc[(metaDataObjDf.ID == id) & (metaDataObjDf.Obj == 1)]], ignore_index=True)
+                    metaDataObjDf.iloc[-1, 1] = i+1             
+                    companionPortLocationsObjDf = pd.concat([companionPortLocationsObjDf, companionPortLocationsObjDf.loc[(companionPortLocationsObjDf.ID == id) & (companionPortLocationsObjDf.Obj == 1)]], ignore_index=True)
+                    companionPortLocationsObjDf.iloc[-1, 1] = i+1             
+
+        metaDataObjDf = metaDataObjDf.sort_values(by = ['ID', 'Obj']).reset_index(drop = True)
+        companionPortLocationsObjDf = companionPortLocationsObjDf.sort_values(by = ['ID', 'Obj']).reset_index(drop = True)
         countLogDfTrimmed = calculateSpeedinCountLog(
-            countLogDfUnselected, companionPortLocationsDf, smoothing)
+            countLogDfUnselected, companionPortLocationsObjDf, smoothing)
         countLogDfTimeBanded = countLogDfTrimmed.loc[(
             countLogDfTrimmed.Seconds > startMin * 60) & (countLogDfTrimmed.Seconds < endMin * 60)]
         metaDataDf.columns = metaDataDf.columns.str.replace(' ', '')
-        metaDataDf['Date'] = extractDateStr(countLogList[dataSetNumber])[0]
+        metaDataObjDf['Date'] = extractDateStr(countLogList[dataSetNumber])[0]
         countLogDfNew, countLogDfOld = locoUtilities.resampleCountLog(
             countLogDfTimeBanded, countLogList[dataSetNumber], initialResamplePeriod, longForm)
         countLogDfNew = correctInPortData(countLogDfNew)
@@ -179,7 +203,8 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
                 '_' + countLogDfNew.columns
         if dataSetNumber == 0:
             bigCountLogDf = countLogDfNew
-            bigMetaDataDf = metaDataDf
+            bigMetaDataDf = metaDataObjDf
+            bigPortLocationsDf = companionPortLocationsObjDf
         else:
             if longForm:
                 bigCountLogDf = pd.concat(
@@ -187,13 +212,15 @@ def readMetaAndCount(dataFolder, companionEspObj,  startMin, endMin, initialResa
             else:
                 bigCountLogDf = pd.concat(
                     [bigCountLogDf, countLogDfNew], axis=1)
-                bigMetaDataDf = pd.concat([bigMetaDataDf, metaDataDf], axis=0)
+                bigMetaDataDf = pd.concat([bigMetaDataDf, metaDataObjDf], axis=0)
+                bigPortLocationsDf = pd.concat([bigPortLocationsDf, companionPortLocationsObjDf], axis=0)
 
     bigMetaDataDf = bigMetaDataDf.reset_index(drop=True)
+#     print(bigMetaDataDf)
     bigMetaDataDf['Genotype'] = bigMetaDataDf['Genotype'].str.lower()
-    bigMetaDataDf['Food1'] = bigMetaDataDf['Food1'].astype(str)
-    bigMetaDataDf['Food2'] = bigMetaDataDf['Food2'].astype(str)
-    bigMetaDataDf['Starvedhrs'] = bigMetaDataDf['Starvedhrs'].astype(str)
+    bigMetaDataDf['Food 1'] = bigMetaDataDf['Food 1'].astype(str)
+    bigMetaDataDf['Food 2'] = bigMetaDataDf['Food 2'].astype(str)
+    bigMetaDataDf['Starved hrs'] = bigMetaDataDf['Starved hrs'].astype(str)
     bigMetaDataDf = assignStatus(bigMetaDataDf)
     return bigMetaDataDf, bigCountLogDf, bigPortLocationsDf, experimentSummary
 

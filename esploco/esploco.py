@@ -79,6 +79,10 @@ class esploco(object):
             dataFolder = dataFolder+'/'
         self.metaDataDf, self.countLogDf, self.portLocationsDf, self.experimentSummary = locoDataMunger.readMetaAndCount(
             dataFolder, companionEspObj, startMin, endMin, initialResamplePeriod, smoothing, longForm)
+        print(self.metaDataDf)
+        print(self.countLogDf)
+        print(self.portLocationsDf)
+        print(self.experimentSummary)
         outputDir = locoUtilities.makeOutputFolders(dataFolder)
         self.dataFolder = dataFolder
         self.outputFolder = outputDir
@@ -95,6 +99,7 @@ class esploco(object):
             100*(self.countLogDf.filter(regex='LeftPort') > 0), axis=0)
         self.resultsDf['inRightPort'] = np.nanmean(
             100*(self.countLogDf.filter(regex='RightPort') > 0), axis=0)
+        print(self.resultsDf)
         if any(self.experimentSummary.countLogDate.str.contains(self.resultsDf.Date[0])):
             self.resultsDf['countLogDate'] = self.resultsDf['Date']
             self.resultsDf['feedLogDate'] = [self.experimentSummary.loc[self.experimentSummary['countLogDate']
