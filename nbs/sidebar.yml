@@ -8,3 +8,4 @@ website:
       - locoPlotters.ipynb
       - locoUtilities.ipynb
       - plotTools.ipynb
+      - testscript.ipynb

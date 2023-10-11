@@ -302,7 +302,9 @@ def calculateSpeedinCountLog(countLogDf, companionPortLocationsDf, smoothing, sp
 # %% ../nbs/locoDataMunger.ipynb 7
 def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj, exptSum, monitorWindow=120, startSeconds=0):
 
+    
     feedsRevisedDf = companionEspObj.feeds[companionEspObj.feeds.Valid]
+    feedsRevisedDf.insert(len(feedsRevisedDf.columns),'objID',1)
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startMonitorIdx',np.nan)
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startFeedIdx',np.nan)
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startFeedIdxRevised',np.nan)
@@ -314,12 +316,12 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),str(monitorWindow)+'afterFeedSpeed_mm/s',np.nan)
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),'revisedFeedDuration_s',np.nan)
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),'countLogID',np.nan)
-
+    
     feedsRevisedDf = feedsRevisedDf.drop(labels=feedsRevisedDf.loc[np.isnan(
         feedsRevisedDf['FeedDuration_s'])].index, axis=0)
-
+    
     # setup toolbar
-
+    
     print('recalculating feed duration for feeds...')
     locoUtilities.startProgressbar()
     for i in feedsRevisedDf.index:
@@ -331,57 +333,63 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
             # print(exptSum.loc[exptSum['feedLogDate']==feedDate])
             countDate = exptSum.loc[exptSum['feedLogDate']
                                     == feedDate]['countLogDate'].iloc[0]
+            print(feed)
             countLogObjID = countDate + '_Ch' + \
-                chamberID.split('amber')[1]+'_Obj1'
-            y = countLogDf[countLogObjID+'_Y']
+                chamberID.split('amber')[1]+'_Obj'
+            y = countLogDf.filter(regex = countLogObjID+'._Y')
+            ilp = countLogDf.filter(regex = countLogObjID+'._InLeftPort')
             t = countLogDf[countDate+'_Seconds']
-            v = countLogDf[countLogObjID+'_V']
-            ploc = companionPortLocationsDf.loc[companionPortLocationsDf.DateChamberID == chamberID]
+            v = countLogDf.filter(regex = countLogObjID+'._V')
+            ploc = companionPortLocationsDf.loc[companionPortLocationsDf.DateChamberID == chamberID].reset_index(drop = True).iloc[0]
             startFeedTime = feed['RelativeTime_s']
             endFeedTime = feed['RelativeTime_s'] + feed['FeedDuration_s']
             startFeedIdx = np.abs(t - startFeedTime).idxmin()
             endFeedIdx = np.abs(t - endFeedTime).idxmin()
-            outPort = 1*(y[startFeedIdx:endFeedIdx].values -
-                         ploc.LeftPortYConv.values < 0)
-            longestFeedStretch = np.cumsum(
-                outPort) == np.bincount(outPort.cumsum()).argmax()
-            longestFeedStretchIdx = [
-                j for j, l in enumerate(longestFeedStretch) if l]
-            startFeedIdx1 = t.index[t.index.get_loc(
-                startFeedIdx)+longestFeedStretchIdx[0]]
-            endFeedIdx1 = t.index[t.index.get_loc(
-                startFeedIdx)+longestFeedStretchIdx[-1]]
-            startFeedTime1 = t[startFeedIdx1]
-            endFeedTime1 = t[endFeedIdx1]
-            startMonitorTime = np.max([0, startFeedTime1 - monitorWindow])
-            startMonitorIdx = np.abs(t - startMonitorTime).idxmin()
-            endMonitorTime = np.nanmin(
-                [np.nanmax(t.values), endFeedTime1 + monitorWindow])
-            endMonitorIdx = np.abs(t - endMonitorTime).idxmin()
-            feedsRevisedDf.loc[i, 'countLogID'] = countLogObjID
-            feedsRevisedDf.loc[i, 'startMonitorIdx'] = startMonitorIdx
-            feedsRevisedDf.loc[i, 'startFeedIdx'] = startFeedIdx
-            feedsRevisedDf.loc[i, 'startFeedIdxRevised'] = startFeedIdx1
-            feedsRevisedDf.loc[i, 'endFeedIdx'] = endFeedIdx
-            feedsRevisedDf.loc[i, 'endFeedIdxRevised'] = endFeedIdx1
-            feedsRevisedDf.loc[i, 'endMonitorIdx'] = endMonitorIdx
-            feedsRevisedDf.loc[i,'revisedFeedDuration_s'] = endFeedTime1 - startFeedTime1
-            vb = np.nanmean(v[startMonitorIdx:startFeedIdx1])
-            vd = np.nanmean(v[startFeedIdx1:endFeedIdx1])
-            va = np.nanmean(v[endFeedIdx1:endMonitorIdx])
-            feedsRevisedDf.loc[i, str(monitorWindow) +
-                               'beforeFeedSpeed_mm/s'] = vb
-            feedsRevisedDf.loc[i, 'duringFeedSpeed_mm/s'] = vd
-            feedsRevisedDf.loc[i, str(monitorWindow) +
-                               'afterFeedSpeed_mm/s'] = va
-            feedsRevisedDf.loc[i, str(
-                monitorWindow)+'duringPercSpeedGain'] = ((vd - vb)/(vb))*100
-            feedsRevisedDf.loc[i, str(monitorWindow) +
-                               'afterPercSpeedGain'] = ((va - vb)/vb)*100
+            objID = ilp.columns[ilp.loc[startFeedIdx:endFeedIdx].mean()>0]
+            if len(objID)>0:
+                outPort = 1*(y.loc[startFeedIdx:endFeedIdx][objID[0].replace('InLeftPort', 'Y')] -
+                             ploc.LeftPortYConv < 0)
+                longestFeedStretch = np.cumsum(
+                    outPort) == np.bincount(outPort.cumsum()).argmax()
+                longestFeedStretchIdx = [
+                    j for j, l in enumerate(longestFeedStretch) if l]
+                startFeedIdx1 = t.index[t.index.get_loc(
+                    startFeedIdx)+longestFeedStretchIdx[0]]
+                endFeedIdx1 = t.index[t.index.get_loc(
+                    startFeedIdx)+longestFeedStretchIdx[-1]]
+                startFeedTime1 = t[startFeedIdx1]
+                endFeedTime1 = t[endFeedIdx1]
+                startMonitorTime = np.max([0, startFeedTime1 - monitorWindow])
+                startMonitorIdx = np.abs(t - startMonitorTime).idxmin()
+                endMonitorTime = np.nanmin(
+                    [np.nanmax(t.values), endFeedTime1 + monitorWindow])
+                endMonitorIdx = np.abs(t - endMonitorTime).idxmin()
+                feedsRevisedDf.loc[i, 'countLogID'] = countLogObjID
+                feedsRevisedDf.loc[i, 'objID'] = objID[0].split('Obj')[1].split('_')[0]
+                feedsRevisedDf.loc[i, 'startMonitorIdx'] = startMonitorIdx
+                feedsRevisedDf.loc[i, 'startFeedIdx'] = startFeedIdx
+                feedsRevisedDf.loc[i, 'startFeedIdxRevised'] = startFeedIdx1
+                feedsRevisedDf.loc[i, 'endFeedIdx'] = endFeedIdx
+                feedsRevisedDf.loc[i, 'endFeedIdxRevised'] = endFeedIdx1
+                feedsRevisedDf.loc[i, 'endMonitorIdx'] = endMonitorIdx
+                feedsRevisedDf.loc[i,'revisedFeedDuration_s'] = endFeedTime1 - startFeedTime1
+                vb = np.nanmean(v[startMonitorIdx:startFeedIdx1])
+                vd = np.nanmean(v[startFeedIdx1:endFeedIdx1])
+                va = np.nanmean(v[endFeedIdx1:endMonitorIdx])
+                feedsRevisedDf.loc[i, str(monitorWindow) +
+                                   'beforeFeedSpeed_mm/s'] = vb
+                feedsRevisedDf.loc[i, 'duringFeedSpeed_mm/s'] = vd
+                feedsRevisedDf.loc[i, str(monitorWindow) +
+                                   'afterFeedSpeed_mm/s'] = va
+                feedsRevisedDf.loc[i, str(
+                    monitorWindow)+'duringPercSpeedGain'] = ((vd - vb)/(vb))*100
+                feedsRevisedDf.loc[i, str(monitorWindow) +
+                                   'afterPercSpeedGain'] = ((va - vb)/vb)*100
             locoUtilities.drawProgressbar()
     locoUtilities.endProgressbar()
     feedsRevisedDf['revisedFeedDuration_min'] = feedsRevisedDf['revisedFeedDuration_s']/60
     feedsRevisedDf['FeedVol_pl'] = feedsRevisedDf['FeedVol_nl']*1000
+    feedsRevisedDf['countLogID'] = feedsRevisedDf['countLogID'] +feedsRevisedDf['objID']
     grouped_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID'])
     mean_df = grouped_df.mean(numeric_only=False)
     mean_df.reset_index(inplace=True)
@@ -392,6 +400,8 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     first_df = first_df.rename(columns = {'RelativeTime_s': 'Latency_s'})
     feedResults = pd.merge(mean_df, total_df, how = 'outer', on = 'ChamberID', suffixes=("_Mean", "_Total"))
     feedResults = pd.merge(feedResults, first_df[['ChamberID', 'Latency_s']], how = 'outer', on = 'ChamberID')
+    feedResults['Obj_FeedCount'] = feedResults['objID_Total'].str.len()
+    feedResults.insert(1, 'ObjID', feedResults['objID_Total'].str[0])
     feedResults = feedResults.drop(columns=[ 'revisedFeedDuration_min_Mean',
                                              'revisedFeedDuration_s_Total',
                                             '120duringPercSpeedGain_Mean',
@@ -420,9 +430,12 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
                                             str(monitorWindow)+'afterFeedSpeed_mm/s_Total',
                                               'AverageFeedSpeedPerFly_µl/s_Total',
                                               'FeedVol_µl_Total', 
-                                            'countLogID_Mean'])
-                                            
-                                             
+                                            'countLogID_Mean', 'objID_Total','objID_Mean',
+                                           'startMonitorIdx','AviFile',
+                                           'startFeedIdx', 'startFeedIdxRevised', 'endFeedIdx',
+                                           'endFeedIdxRevised', 'endMonitorIdx',])
+    
+    
     mealSizeColumn = [i for  i, s in enumerate(feedResults.columns) if ('AverageFeedVolumePerFly_' in s) & ('Mean' in s )][0]
     feedResults['Latency_s'] = feedResults['Latency_s']/60
     feedResults = feedResults.rename(
@@ -477,7 +490,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     # plt.plot(countLogDfNew[countLogDfNew.filter('_feedRevisedDuration').columns].fillna(0), 'o')
         locoUtilities.drawProgressbar()
     locoUtilities.endProgressbar()
-
+    
     durCols = countLogDfNew.filter('_feedRevisedDuration').columns
     countLogDfNew[durCols] = countLogDfNew[durCols].fillna(0)
     cumFeedVol = countLogDfNew.filter(regex='_feedVol').cumsum()
@@ -496,6 +509,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
                 if 'Gain' not in c:
                     feedResults[c].fillna(0, inplace=True)
     
+
     return feedsRevisedDf, countLogDfNew, feedResults, maxSpeed
 
 
