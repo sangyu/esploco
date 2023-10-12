@@ -46,7 +46,8 @@ def resampleCountLog(countLogDf, countLogName, resampleFrequencyInMs =50, longFo
         countLogDfReIndexed=countLogDfNewTime.set_index(countLogDfNewTime['NewTime'])
     else:
         countLogDfReIndexed=countLogDfNewTime.set_index(absStartTime + countLogDfNewTime['NewAbsoluteTime'])
-    countLogDfResampled = countLogDfReIndexed.resample(resampleFrequency).agg(np.mean)
+    # countLogDfResampled = countLogDfReIndexed.resample(resampleFrequency).agg(np.mean)
+    countLogDfResampled = countLogDfReIndexed.resample(resampleFrequency).agg('mean', numeric_only = True)
     return countLogDfResampled, originalCountLogDf
 
     

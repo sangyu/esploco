@@ -355,16 +355,17 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     locoUtilities.endProgressbar()
     feedsRevisedDf['revisedFeedDuration_min'] = feedsRevisedDf['revisedFeedDuration_s']/60
     feedsRevisedDf['FeedVol_pl'] = feedsRevisedDf['FeedVol_nl']*1000
+
+    
     grouped_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID'])
-    mean_df = grouped_df.mean(numeric_only=False)
-    mean_df.reset_index(inplace=True)
-    total_df = grouped_df.sum(numeric_only=False)
-    total_df.reset_index(inplace=True)
-    first_df = grouped_df.first()
-    first_df.reset_index(inplace=True)
+    mean_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).mean(numeric_only=True)
+    total_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).mean(numeric_only=True)
+    non_numeric_df = feedsRevisedDf.select_dtypes(include='object').groupby(['ChamberID', 'countLogID']).first()
+    first_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).first(numeric_only=True)
     first_df = first_df.rename(columns = {'RelativeTime_s': 'Latency_s'})
-    feedResults = pd.merge(mean_df, total_df, how = 'outer', on = 'ChamberID', suffixes=("_Mean", "_Total"))
-    feedResults = pd.merge(feedResults, first_df[['ChamberID', 'Latency_s']], how = 'outer', on = 'ChamberID')
+    feedResults = pd.concat([non_numeric_df, first_df[['Latency_s']]], axis = 1)
+    feedResults = pd.concat([feedResults, pd.merge(mean_df, total_df, how = 'outer', on = ['ChamberID', 'countLogID'], suffixes=("_Mean", "_Total"))], axis = 1)
+    feedResults.reset_index(inplace = True)
     feedResults = feedResults.drop(columns=[ 'revisedFeedDuration_min_Mean',
                                              'revisedFeedDuration_s_Total',
                                             '120duringPercSpeedGain_Mean',
@@ -384,7 +385,6 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
                                             'Valid_Total',
                                             str(monitorWindow)+'duringPercSpeedGain_Total',
                                             str(monitorWindow)+'afterPercSpeedGain_Total', 
-                                            'countLogID_Total', 
                                             'FeedSpeed_nl/s_Total', 
                                             'RelativeTime_s_Total', 
                                             'Starved hrs_Total', 
@@ -392,8 +392,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
                                             'duringFeedSpeed_mm/s_Total', 
                                             str(monitorWindow)+'afterFeedSpeed_mm/s_Total',
                                               'AverageFeedSpeedPerFly_µl/s_Total',
-                                              'FeedVol_µl_Total', 
-                                            'countLogID_Mean'])
+                                              'FeedVol_µl_Total'])
                                             
                                              
     mealSizeColumn = [i for  i, s in enumerate(feedResults.columns) if ('AverageFeedVolumePerFly_' in s) & ('Mean' in s )][0]
