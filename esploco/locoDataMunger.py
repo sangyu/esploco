@@ -359,7 +359,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     
     grouped_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID'])
     mean_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).mean(numeric_only=True)
-    total_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).mean(numeric_only=True)
+    total_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).sum(numeric_only=True)
     non_numeric_df = feedsRevisedDf.select_dtypes(include='object').groupby(['ChamberID', 'countLogID']).first()
     first_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).first(numeric_only=True)
     first_df = first_df.rename(columns = {'RelativeTime_s': 'Latency_s'})
