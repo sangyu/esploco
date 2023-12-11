@@ -39,38 +39,41 @@ class esploco(object):
             path to the directory containing all output files of espresso assay
         startMin : int, default 0
             starting minute for analysis
-        endMin: int, default 120
-        companionEspObj: an espresso object, default None
+        endMin : int, default 120
+            ending minute for analysis
+        companionEspObj : object, default None
             from the espresso analysis package
-        initialResamplePeriod: int, default 50
-        smoothing: boolean, default True
-            whether or not to smooth the trajectories
-        longForm: boolean, default False
+        initialResamplePeriod : int, defualt 50
+            period of sample in ms (initialResamplePeriod = 50 ms, sampling frequency = 1000/50 = 20 Hz), default 50
+        smoothing : boolean, defult True
+            whether or not to smooth the trajectories, default True
+        longForm : boolean, default False
             whether or not the data input is the same set of flies but over many days.
+
 
         Returns
         -------
-        An `esploco` object.
-        `esploco.resultsDf` contains relevant output metrics 
-        '.ID': from metadata
-        '.Status': 'Test' or 'Ctrl'
-        '.Genotype': genotype
-        '.Sex': from metadata
-        '.MinimumAge': from metadata
-        '.MaximumAge': from metadata 
-        '.Food1': from metadata
-        '.Food2': from metadata 
-        '.Temperature': from metadata 
-        '.#Flies': from metadata 
-        '.Starvedhrs': from metadata 
-        '.Date': date of feedlog
-        '.averageSpeed_mm/s': instantaneous speed of the fly 
-        '.xPosition_mm': instantaneous x position of the fly 
-        '.yPosition_mm': instantaneous y position of the fly 
-        '.inLeftPort': proportion of time the fly was in left port
-        '.inRightPort': proportion of time the fly was in right port 
-        '.countLogDate': date from countlog
-        '.feedLogDate': date from feedlog
+        `esploco` object 
+            `esploco.resultsDf` : contains relevant output metrics 
+            `esploco.resultsDf.ID` : from metadata
+            `esploco.resultsDf.Status` : 'Test' or 'Ctrl'
+            `esploco.resultsDf.Genotype` : genotype
+            `esploco.resultsDf.Sex` : from metadata
+            `esploco.resultsDf.MinimumAge` : from metadata
+            `esploco.resultsDf.MaximumAge` : from metadata 
+            `esploco.resultsDf.Food1` : from metadata
+            `esploco.resultsDf.Food2` : from metadata 
+            `esploco.resultsDf.Temperature` : from metadata 
+            `esploco.resultsDf.#Flies` : from metadata 
+            `esploco.resultsDf.Starvedhrs` : from metadata 
+            `esploco.resultsDf.Date` : date of feedlog
+            `esploco.resultsDf.averageSpeed_mm/s` : instantaneous speed of the fly 
+            `esploco.resultsDf.xPosition_mm` : instantaneous x position of the fly 
+            `esploco.resultsDf.yPosition_mm` : instantaneous y position of the fly 
+            `esploco.resultsDf.inLeftPort` : proportion of time the fly was in left port
+            `esploco.resultsDf.inRightPort` : proportion of time the fly was in right port 
+            `esploco.resultsDf.countLogDate` : date from countlog
+            `esploco.resultsDf.feedLogDate` : date from feedlog
            
         """
         
@@ -121,16 +124,20 @@ class esploco(object):
 
         Parameters
         ----------
-        ncol : int, default 15
-            number of columns for the plots
+        ncol : int, default 15.
+            number of columns for the plots.
         customPalette : dict, default None
-            user can supply a dict for use as a custom palette
-        setNumber: int, default None
-            user specfied set to plot
+            user can supply a dict for use as a custom palette.
+        setNumber : int, default None
+            user specfied set to plot.
 
         Returns
         -------
-        An `chamberSmallsTrack` figure object and an `chamberSmallsHeat` figure object.
+        `chamberSmallsTrack`
+            figure object.
+            
+        `chamberSmallsHeat` 
+            figure object.
 
         """
         
@@ -192,9 +199,13 @@ class esploco(object):
 
         Returns
         -------
-        `meanHeatmapFig`:  figure object
-        `Hall` : heatmap matrix.
-        `images` : 
+        `meanHeatmapFig`   
+            figure object.
+            
+        `Hall` 
+            heatmap matrix.
+            
+        `images` 
         """
         
 
@@ -248,11 +259,14 @@ class esploco(object):
 
         Returns
         -------
-        `figure`:  figure object
-
-        `axes` : axes handle for the axes
-        `meanLines` : array of values that are the plotted meanlines
-        `ciBounds` : array of values that are the plotted ci 
+        `figure`   
+            figure object.
+        `axes`  
+            axes handle for the axes.
+        `meanLines`  
+            array of values that are the plotted meanlines.
+        `ciBounds`  
+            array of values that are the plotted ci.
 
         """
         
@@ -321,14 +335,12 @@ class esploco(object):
 
         Parameters
         ----------
-
-        companionEspObj: an espresso object, default None
-                from the espresso analysis package
-
-        monitorWindow : int, in seconds, default 120
-            size of the window before and after the feed to monitor speed in
+        companionEspObj : object, default None
+            from the espresso analysis package
+        monitorWindow : int, default 120
+            size of the window in seconds before and after the feed to monitor speed in
         startSeconds : int, default 0 seconds
-            lower range of data to analyse
+            lower range of data to analyse, deprecated in v.23.12.11
         plotDiagonal : boolean, default True
             whether or not to plot the diagonal speed plot 
         plotContrast : boolean, default True
@@ -336,24 +348,26 @@ class esploco(object):
 
         Returns
         -------
-        `esploco.feedsRevisedDf`:  pandas dataframe that contains individual feeds and info about them in a time series
-        `esploco.resultsDf` : updated to contain information about feed and perifeed metrics
-        'ChamberID': from feedlog metadata
-        'Starved hrs': from feedlog metadata 
-        'MealSizePerFly_µL': mean volume per meal per fly in µL
-        'AverageFeedSpeedPerFly_µl/s': mean feed speed per fly over all µL/s
-        'MeanSpeed120sBeforeFeed_mm/s': mean speed before feed mm/s
-        'MeanSpeedDuringFeed_mm/s': mean speed during feed mm/s 
-        'MeanSpeed120sAfterFeed_mm/s': mean speed 120s after feed mm/s
-        'MeanMealDurationPerFly_s': mean meal duration per fly s 
-        'Tube1': food in Tube 1
-        'AverageFeedVolumePerFly_µl': total volume per fly µL 
-        'AverageFeedCountPerFly': total count per fly
-        'AverageFeedDurationPerFly_min': total feed duration per fly
-        'FeedVol_pl': total feed volume in pico liter
-        'Latency_min': latency to first feed in min
-        'duringBeforeSpeedRatio': ratio between during feed speed and before feed speed 
-        'afterBeforeSpeedRatio': ratio between after feed speed and before feed speed
+        `esploco.feedsRevisedDf`   
+            pandas dataframe that contains individual feeds and info about them in a time series.
+        `esploco.resultsDf`  
+            updated to contain information about feed and perifeed metrics
+            `esploco.resultsDf.ChamberID` : from feedlog metadata
+            `esploco.resultsDf.Starved hrs` : from feedlog metadata 
+            `esploco.resultsDf.MealSizePerFly_µL` : mean volume per meal per fly in µL
+            `esploco.resultsDf.AverageFeedSpeedPerFly_µl/s` : mean feed speed per fly over all µL/s
+            `esploco.resultsDf.MeanSpeed120sBeforeFeed_mm/s` : mean speed before feed mm/s
+            `esploco.resultsDf.MeanSpeedDuringFeed_mm/s` : mean speed during feed mm/s 
+            `esploco.resultsDf.MeanSpeed120sAfterFeed_mm/s`' : mean speed 120s after feed mm/s
+            `esploco.resultsDf.MeanMealDurationPerFly_s` : mean meal duration per fly s 
+            `esploco.resultsDf.Tube1` : food in Tube 1
+            `esploco.resultsDf.AverageFeedVolumePerFly_µl` : total volume per fly µL 
+            `esploco.resultsDf.AverageFeedCountPerFly` : total count per fly
+            `esploco.resultsDf.AverageFeedDurationPerFly_min` : total feed duration per fly
+            `esploco.resultsDf.FeedVol_pl` : total feed volume in pico liter
+            `esploco.resultsDf.Latency_min` : latency to first feed in min
+            `esploco.resultsDf.duringBeforeSpeedRatio` : ratio between during feed speed and before feed speed 
+            `esploco.resultsDf.afterBeforeSpeedRatio` : ratio between after feed speed and before feed speed.
 
         """
         
@@ -395,7 +409,6 @@ class esploco(object):
 
         Parameters
         ----------
-
         endMin : int, in min, default 120
             the upper range of data to plot
         metricsToStack : list, default ['Volume', 'Speed']
@@ -416,12 +429,16 @@ class esploco(object):
         showRasterYticks : boolean, default False         
             when True, leaves the yticklabels on the raster plot for chamberID
 
-
         Returns
         -------
-        `stackedFig`:  the figure
-        `feeds_sorted` : the sorted feeds plotted 
-        `colorBy` : the final groupings for the coloring
+        `stackedFig`   
+            the figure.
+            
+        `feeds_sorted`  
+            the sorted feeds plotted.
+            
+        `colorBy`  
+            the final groupings for the coloring.
 
         """
         
@@ -567,12 +584,13 @@ class esploco(object):
             parameter in macd analysis
         ewm2 : int, default 26
             parameter in macd analysis
-        ewm3: int, default 9
+        ewm3 : int, default 9
             parameter in macd analysis
 
         Returns
         -------
-        `self.resultsDf`:  updated to include `falls`
+        `self.resultsDf`   
+            updated to include `falls`
 
         """
 
