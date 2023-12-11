@@ -273,9 +273,9 @@ def calculateSpeedinCountLog(countLogDf, companionPortLocationsDf, smoothing, sp
 
 
 # %% ../nbs/locoDataMunger.ipynb 7
-def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj, exptSum, monitorWindow=120, startSeconds=0):
+def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj, exptSum, monitorWindow=120, startMin = 0, endMin = 120):
 
-    feedsRevisedDf = companionEspObj.feeds[companionEspObj.feeds.Valid]
+    feedsRevisedDf = companionEspObj.feeds[companionEspObj.feeds.Valid].sort_values(by = 'RelativeTime_s')
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startMonitorIdx',np.nan)
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startFeedIdx',np.nan)
     feedsRevisedDf.insert(len(feedsRevisedDf.columns),'startFeedIdxRevised',np.nan)
@@ -297,7 +297,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     locoUtilities.startProgressbar()
     for i in feedsRevisedDf.index:
         feed = feedsRevisedDf.loc[i]
-        if feed.RelativeTime_s > startSeconds:
+        if feed.RelativeTime_s > startMin * 60  and feed.RelativeTime_s <= endMin * 60:
             chamberID = feed['ChamberID']
             feedDate = extractDateStr(chamberID)[0]
             # print(feedDate)
@@ -351,7 +351,10 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
                 monitorWindow)+'duringPercSpeedGain'] = ((vd - vb)/(vb))*100
             feedsRevisedDf.loc[i, str(monitorWindow) +
                                'afterPercSpeedGain'] = ((va - vb)/vb)*100
-            locoUtilities.drawProgressbar()
+            if i % 10 == 0:
+                locoUtilities.drawProgressbar()
+        else:
+            break    
     locoUtilities.endProgressbar()
     feedsRevisedDf['revisedFeedDuration_min'] = feedsRevisedDf['revisedFeedDuration_s']/60
     feedsRevisedDf['FeedVol_pl'] = feedsRevisedDf['FeedVol_nl']*1000
@@ -437,17 +440,18 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     locoUtilities.startProgressbar()
     for i in feedsRevisedDf.index:
         countLogID = feedsRevisedDf.loc[i, 'countLogID']
-        endFeedIdxRevised = feedsRevisedDf.loc[i, 'endFeedIdxRevised']
-        countLogDfNew.loc[endFeedIdxRevised, countLogID +
-                          '_feedVol_pl'] = feedsRevisedDf.loc[i, 'FeedVol_nl']*1000
-        countLogDfNew.loc[endFeedIdxRevised, countLogID+'_feedCount'] = 1
-        countLogDfNew.loc[endFeedIdxRevised, countLogID +
-                          '_feedRevisedDuration_s'] = feedsRevisedDf.loc[i, 'revisedFeedDuration_s']
-        # print(countLogDfNew.loc[endFeedIdxRevised])
-        # print(feedsRevisedDf.loc[i, 'revisedFeedDuration_s'])
-        # print(countLogDfNew.loc[endFeedIdxRevised, countLogID+'_feedRevisedDuration'])
-    # plt.plot(countLogDfNew[countLogDfNew.filter('_feedRevisedDuration').columns].fillna(0), 'o')
-        locoUtilities.drawProgressbar()
+        if type(countLogID)== str:
+            endFeedIdxRevised = feedsRevisedDf.loc[i, 'endFeedIdxRevised']
+            countLogDfNew.loc[endFeedIdxRevised, countLogID +
+                              '_feedVol_pl'] = feedsRevisedDf.loc[i, 'FeedVol_nl']*1000
+            countLogDfNew.loc[endFeedIdxRevised, countLogID+'_feedCount'] = 1
+            countLogDfNew.loc[endFeedIdxRevised, countLogID +
+                              '_feedRevisedDuration_s'] = feedsRevisedDf.loc[i, 'revisedFeedDuration_s']
+            # print(countLogDfNew.loc[endFeedIdxRevised])
+            # print(feedsRevisedDf.loc[i, 'revisedFeedDuration_s'])
+            # print(countLogDfNew.loc[endFeedIdxRevised, countLogID+'_feedRevisedDuration'])
+            # plt.plot(countLogDfNew[countLogDfNew.filter('_feedRevisedDuration').columns].fillna(0), 'o')
+            locoUtilities.drawProgressbar()
     locoUtilities.endProgressbar()
 
     durCols = countLogDfNew.filter('_feedRevisedDuration').columns
@@ -578,7 +582,8 @@ def fallEvents(countLogDf, nstd=4, windowsize=1000, ewm1=12, ewm2=26, ewm3=9):
                 if np.nanmin(vy.iloc[segstart: segend+1, i].values) < speedthreshold and np.nanmax(yy.iloc[segstart: segend+1, i].values) - np.nanmin(yy.iloc[segstart: segend, i].values) > 0.5:
                     aa[segstart:segend, i] = n
                     n = n + 1        
-        locoUtilities.drawProgressbar()
+        if i % 10 == 0:
+            locoUtilities.drawProgressbar()    
     locoUtilities.endProgressbar()
     falls = pd.DataFrame(data=aa, index=vy.index, columns=[
                          c.split('_v')[0] + '_Falls' for c in vy.columns])

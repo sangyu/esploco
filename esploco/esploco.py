@@ -359,7 +359,8 @@ class esploco(object):
         
         
         self.feedsRevisedDf, self.countLogDf, self.meanPeriSpeed, self.maxSpeed= locoDataMunger.calculatePeriFeedLoco(
-            self.countLogDf, self.portLocationsDf, companionEspObj, self.experimentSummary, monitorWindow, startSeconds)
+            self.countLogDf, self.portLocationsDf, companionEspObj, self.experimentSummary,
+            monitorWindow, startMin = self.startMin, endMin = self.endMin)
         self.resultsDf['ChamberID'] = self.resultsDf['feedLogDate'] + '_Chamber' + self.resultsDf['ID'].astype(str)
         nonFeeders = list(set(self.resultsDf.ChamberID.unique())-set(self.feedsRevisedDf.ChamberID.unique()))
         nonFeederDf = self.resultsDf.loc[self.resultsDf['ChamberID'].isin(nonFeeders)][['ChamberID', 'Genotype', 'Temperature', 'Status']]
