@@ -115,6 +115,8 @@ class esploco(object):
         print('version notes 0.1.5: added handling of dabest 0.3.9999')
         print('version notes 0.2.0: major refactoring')
         print('version notes 23.04.21: nbdev')
+        print('version notes 23.10.22: updated to account for new pandas')
+        print('version notes 23.12.11: updated to fix experimental end time')
 
  
     def plotChamberSmallMultiples(self, ncol=15, customPalette=None, setNumber=None):
@@ -433,10 +435,8 @@ class esploco(object):
         -------
         `stackedFig`   
             the figure.
-            
         `feeds_sorted`  
             the sorted feeds plotted.
-            
         `colorBy`  
             the final groupings for the coloring.
 
