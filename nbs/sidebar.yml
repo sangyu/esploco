@@ -2,10 +2,14 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 01 Tutorial.ipynb
-      - 02 API.ipynb
-      - esploco.ipynb
-      - locoDataMunger.ipynb
-      - locoPlotters.ipynb
-      - locoUtilities.ipynb
-      - plotTools.ipynb
+      - section: API
+        contents:
+          - API/esploco.ipynb
+          - API/locoDataMunger.ipynb
+          - API/locoPlotters.ipynb
+          - API/locoUtilities.ipynb
+          - API/plotTools.ipynb
+      - section: Tutorials
+        contents:
+          - Tutorials/01 Tutorial.ipynb
+          - Tutorials/02 Main Functions.ipynb

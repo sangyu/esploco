@@ -8,13 +8,21 @@ format:
     toc: true
 
 website:
+  title: "esploco"
+  site-url: "https://sangyu.github.io/esploco/"
+  description: "analysis package for drosophila feeding data"
   twitter-card: true
   open-graph: true
   repo-actions: [issue]
   navbar:
+    right:
+      - icon: github
+        href: https://github.com/sangyu/esploco
+      - icon: twitter
+        href: https://twitter.com/xusangyu
     background: primary
     search: true
-  sidebar:
+  sidebar:    
     style: floating
 
 metadata-files: [nbdev.yml, sidebar.yml]
