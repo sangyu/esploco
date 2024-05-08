@@ -403,7 +403,7 @@ class esploco(object):
     
     def plotStacked(self, endMin = 120, metricsToStack = ['Volume', 'Speed'], colorBy = 'Genotype',
                     customPalette = None, figsize = None, dotratio = 20, dotbase = 5, plotNonFeeders = True,
-                    ylimPresets = None, showRasterYticks = False):
+                    ylimPresets = None, showRasterYticks = False, ribbonLegend = False):
         """
 
         Plots a raster of feeds stacked with a selection of other metrics in a ribbon
@@ -466,7 +466,10 @@ class esploco(object):
                 shortkeys[k] = keys[k].replace('-Red Light', '')
             elif 'Green Light' in keys[k]:
                 shortkeys[k] = keys[k].replace('-Green Light', '')
-        feeds_sorted = feeds.sort_values(by=[colorBy, 'RelativeTime_s'])
+            else:
+                shortkeys = keys
+        feeds_sorted = feeds.sort_values(by=[colorBy, 'RelativeTime_s']).dropna()
+        feeds_sorted['Starvedhrs'] = feeds_sorted['Starvedhrs'].astype(float).astype('int').astype('str')
         chord = feeds_sorted.ChamberID.reset_index(drop = True)
         _, idx = np.unique(chord, return_index=True)
         chamberLabels = chord[np.sort(idx)]
@@ -474,6 +477,13 @@ class esploco(object):
         feeds_sorted['ChamberID'] = feeds_sorted['ChamberID'].astype(chord_catType)
         feeds_sorted['time'] = pd.to_datetime(feeds_sorted['RelativeTime_s'], unit='s')
         idx = pd.date_range(feeds_sorted.iloc[0]['time'], feeds_sorted.iloc[-1]['time'], freq = 'ms')
+        plColumns = self.countLogDf.filter(regex = '_feedVol_pl').columns
+        nlColumns = self.countLogDf.filter(regex = '_feedVol_nl').columns
+        if len(nlColumns)==0:
+            nlColumns = [s.replace('_feedVol_pl', '_feedVol_nl') for s in plColumns]
+            nlDf = self.countLogDf[plColumns].div(1000)
+            nlDf.columns = nlColumns
+            self.countLogDf = pd.concat([self.countLogDf, nlDf], axis = 1)
         metricDict = {'Volume': '_feedVol_nl', 
                       'Count': '_feedCount', 
                       'Duration': '_feedRevisedDuration_s',  
@@ -522,8 +532,8 @@ class esploco(object):
         height = np.array(axbig.get_ylim()).max()
         keyDotsY =[height*0.15, height*0.10,height*0.05,0]
         for i in range(len(keyDots)):
-            plt.plot(endMin*1.04, keyDotsY[i], '.', markersize = 5+dotratio*keyDots[i], c = 'k', alpha = 0.4)
-            plt.text(endMin*1.06, keyDotsY[i], str("%.0f" % keyDotsLabels[i])+' pL', c = 'k', verticalalignment = 'center')
+            plt.plot(endMin*1.04, keyDotsY[i], '.', markersize = dotbase+dotratio*keyDots[i], c = 'k', alpha = 0.4)
+            plt.text(endMin*1.06, keyDotsY[i], str("%.0f" % keyDotsLabels[i])+' nL', c = 'k', verticalalignment = 'center')
         s = [lab.get_text().split('ber')[-1] for lab in axbig.get_yticklabels()]
         axbig.tick_params(
             axis='y',          # changes apply to the x-axis
@@ -533,15 +543,22 @@ class esploco(object):
         countLogDfRange = self.countLogDf.loc[self.countLogDf.iloc[:, 0]<endMin*60]
         def ribbonMetric(countLog, metric, colorBy, palette, colorByKeys, ax = None):
             for k in range(len(keys)):
+                if metric in ['_feedVol_nl', '_feedCount', '_feedRevisedDuration_s']:
+                    aggMethod = 'sum'
+                else: 
+                    aggMethod = 'mean'
                 locoPlotters.plotBoundedLine(countLogDfRange.iloc[:, 0]/60, 
                                              countLogDfRange.filter(regex = metric).iloc[:, colorByKeys[keys[k]]], 
-                                             ax = ax, c = palette[keys[k]],  resamplePeriod = '60s', label = shortkeys[k])
+                                             ax = ax, c = palette[keys[k]],  resamplePeriod = '60s', aggMethod = aggMethod, label = shortkeys[k])
         for [m, mm]  in enumerate(metricsToStack):
             ribbonMetric(countLogDfRange,  metricDict[mm], colorBy = colorBy,palette = palette, colorByKeys = colorByKeys, 
                          ax = stackedAxes[m+3])
             stackedAxes[m+3].set_ylabel(metricYLabelsDict[mm], fontweight = 'semibold')
-            if stackedAxes[m+3].get_legend():
-                stackedAxes[m+3].get_legend().remove()                
+            if ribbonLegend == False:
+                if stackedAxes[m+3].get_legend():
+                    stackedAxes[m+3].get_legend().remove()    
+                else:
+                    stackedAxes[m+3].get_legend()            
             stackedAxes[m+3].set_xlim(-endMin*0.02, endMin*1.05)
             stackedAxes[m+3].spines[[ 'top']].set_visible(False)
             stackedAxes[m+3].spines[['right']].set_visible(False)

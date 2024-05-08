@@ -242,11 +242,14 @@ def espressoPlotMeanHeatmaps(espLocoObj, binSize,row, col, reverseRows, reverseC
 
 
 # %% ../nbs/API/locoPlotters.ipynb 9
-def plotBoundedLine(x, Y, ax=None, c = 'k', resamplePeriod = '200s', label = ''):
+def plotBoundedLine(x, Y, ax=None, c = 'k', resamplePeriod = '200s', aggMethod = 'mean', label = ''):
     if ax is None:
         ax = plt.gca()
     if resamplePeriod:
-        Y = Y.resample(resamplePeriod).agg(np.mean)
+        if aggMethod == 'mean':
+            Y = Y.resample(resamplePeriod).agg(np.mean)
+        elif aggMethod == 'sum':
+            Y = Y.resample(resamplePeriod).agg(np.sum)
         x = x.resample(resamplePeriod).agg(np.mean)
     y = np.nanmean(Y, axis = 1)
     ci = np.nanstd(Y, axis = 1)/(np.sqrt(Y.shape[1]))*1.96
