@@ -207,6 +207,13 @@ class esploco(object):
         heatmapCMap : cmap, default 'RdYlBu_r'
             colormap used for the heatmap
         smooth : int, default 2
+            this defines how much smoothing happenes in with the Gaussian Kernel. 
+        plotZScore : boolean, defult False. 
+            this toggles between plotting raw heatmap in seconds and z-score
+        vmin : float, default None
+            this forces the vmin on the heatmap color scale
+        vmax : float, default None
+            this forces the vmax on the heatmap color scale
 
 
         Returns
@@ -215,7 +222,7 @@ class esploco(object):
             figure object.
             
         `Hall` 
-            heatmap matrix.
+            heatmap matrix. this the raw matrix when plotZScore is False and it is the z-score matrix when plotZScore is True.
             
         `images` 
         """
