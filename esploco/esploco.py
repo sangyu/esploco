@@ -185,7 +185,7 @@ class esploco(object):
 #     show_doc(plotChamberSmallMultiples)
     
     def plotMeanHeatMaps(self, binSize=0.2, row=None, col=None, reverseRows=False, reverseCols=False, 
-                         verbose=False, heatmapCMap='RdYlBu_r', smooth=2, plotZScore = False):
+                         verbose=False, heatmapCMap='RdYlBu_r', smooth=2, plotZScore = False, vmin = None, vmax = None):
         """
 
         Plots heatmap of mean duration stayed at each location throughout the chamber grouped by criteria
@@ -224,12 +224,12 @@ class esploco(object):
         heatMapOutputDir = self.outputFolder
         if verbose:
             meanHeatmapFig,  Hall, images, smallHeatmapFigs = locoPlotters.espressoPlotMeanHeatmaps(
-                self, binSize, None, None, False, False, verbose, heatmapCMap, smooth, plotZScore)
+                self, binSize, None, None, False, False, verbose, heatmapCMap, smooth, plotZScore, vmin, vmax)
             locoUtilities.espressoSaveFig(
                 smallHeatmapFigs, 'smallHeatmapFigs', self.metaDataDf.Date[0], heatMapOutputDir, pngDPI=200)
         else:
             meanHeatmapFig, Hall, images = locoPlotters.espressoPlotMeanHeatmaps(
-                self, binSize, row, col, reverseRows, reverseCols, verbose, heatmapCMap, smooth, plotZScore)
+                self, binSize, row, col, reverseRows, reverseCols, verbose, heatmapCMap, smooth, plotZScore, vmin, vmax)
         # self.resultsDf = resultsDf
         self.heatmapMatrix = Hall
         self.meanHeatmapFig = meanHeatmapFig

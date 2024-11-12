@@ -134,7 +134,7 @@ def espressoPlotHeatmap(X, Y, flyGenotype, colorPalette):
 
 
 # %% ../nbs/API/locoPlotters.ipynb 8
-def espressoPlotMeanHeatmaps(espLocoObj, binSize,row, col, reverseRows, reverseCols, verbose, heatmapCMap, smooth, plotZScore):
+def espressoPlotMeanHeatmaps(espLocoObj, binSize,row, col, reverseRows, reverseCols, verbose, heatmapCMap, smooth, plotZScore, vmin = None, vmax = None):
     font_dirs = ["/Users/sangyuxu/Library/Fonts"]
     font_files = font_manager.findSystemFonts(fontpaths=font_dirs)
     for font_file in font_files:
@@ -216,8 +216,10 @@ def espressoPlotMeanHeatmaps(espLocoObj, binSize,row, col, reverseRows, reverseC
     # resultsDf['bottom'] = bottom
     # resultsDf['LR Preference'] = (resultsDf['left']- resultsDf['right'])/ (resultsDf['right']+resultsDf['left'])
     # resultsDf['TB Preference'] = (resultsDf['right'] + resultsDf['left'] - resultsDf['bottom'])/ (resultsDf['bottom']+resultsDf['right']+resultsDf['left'])
-    vmin = min(image.get_array().min() for image in images)
-    vmax = max(image.get_array().max() for image in images)
+    if vmin == None:
+        vmin = min(image.get_array().min() for image in images)
+    if vmax == None:
+        vmax = max(image.get_array().max() for image in images)
 #     norm = colors.Normalize(vmin=vmin, vmax=vmax)
 #     for im in images:
 #         im.set_norm(norm)
