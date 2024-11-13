@@ -352,7 +352,7 @@ class esploco(object):
         return figure, axes, meanLines, ciBounds
 #     show_doc(plotBoundedLines)
 
-    def calculatePeriFeedSpeed(self, companionEspObj, monitorWindow=120, startSeconds=0, maxDuration_s = None, maxFeedSpeed_nl_s = None, plotDiagonal = True, plotContrast = True):
+    def calculatePeriFeedSpeed(self, companionEspObj, monitorWindow=120, startSeconds=0, plotDiagonal = True, plotContrast = True):
         """
 
         Calculates speed of the fly around a feed
@@ -397,7 +397,7 @@ class esploco(object):
         
         
         self.feedsRevisedDf, self.countLogDf, self.meanPeriSpeed, self.maxSpeed= locoDataMunger.calculatePeriFeedLoco(
-            self.countLogDf, self.portLocationsDf, companionEspObj, self.experimentSummary, monitorWindow,maxDuration_s = maxDuration_s,  maxFeedSpeed_nl_s = maxFeedSpeed_nl_s, startMin = self.startMin, endMin = self.endMin)
+            self.countLogDf, self.portLocationsDf, companionEspObj, self.experimentSummary, monitorWindow, startMin = self.startMin, endMin = self.endMin)
         self.resultsDf['ChamberID'] = self.resultsDf['feedLogDate'] + '_Chamber' + self.resultsDf['ID'].astype(str)
         nonFeeders = list(set(self.resultsDf.ChamberID.unique())-set(self.feedsRevisedDf.ChamberID.unique()))
         nonFeederDf = self.resultsDf.loc[self.resultsDf['ChamberID'].isin(nonFeeders)][['ChamberID', 'Genotype', 'Temperature', 'Status']]

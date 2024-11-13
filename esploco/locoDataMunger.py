@@ -332,7 +332,7 @@ def calculateSpeedinCountLog(countLogDf, companionPortLocationsDf, smoothing, sp
 
 
 # %% ../nbs/API/locoDataMunger.ipynb 7
-def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj, exptSum, monitorWindow=120, maxDuration_s = None, maxFeedSpeed_nl_s = None, startMin = 0, endMin = 120):
+def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj, exptSum, monitorWindow=120, startMin = 0, endMin = 120):
     """
 
     Calculates speed around feeds 
@@ -450,10 +450,6 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     locoUtilities.endProgressbar()
     feedsRevisedDf['revisedFeedDuration_min'] = feedsRevisedDf['revisedFeedDuration_s']/60
     feedsRevisedDf['FeedVol_pl'] = feedsRevisedDf['FeedVol_nl']*1000
-    if maxDuration_s:
-        feedsRevisedDf = feedsRevisedDf.loc[feedsRevisedDf['FeedDuration_s']< maxDuration_s]
-    if maxFeedSpeed_nl_s:
-        feedsRevisedDf = feedsRevisedDf.loc[feedsRevisedDf['FeedSpeed_nl/s']< maxFeedSpeed_nl_s]
     grouped_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID'])
     mean_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).mean(numeric_only=True)
     total_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).sum(numeric_only=True)
