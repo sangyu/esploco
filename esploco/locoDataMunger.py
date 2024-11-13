@@ -450,8 +450,6 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     locoUtilities.endProgressbar()
     feedsRevisedDf['revisedFeedDuration_min'] = feedsRevisedDf['revisedFeedDuration_s']/60
     feedsRevisedDf['FeedVol_pl'] = feedsRevisedDf['FeedVol_nl']*1000
-
-    
     grouped_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID'])
     mean_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).mean(numeric_only=True)
     total_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).sum(numeric_only=True)
