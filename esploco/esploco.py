@@ -560,7 +560,7 @@ class esploco(object):
         if bubbleLegend:
             for i in range(len(keyDots)):
                 plt.plot(endMin*1.04, keyDotsY[i], '.', markersize = dotbase+dotratio*keyDots[i], c = 'k', alpha = dotalpha)
-                plt.text(endMin*1.06, keyDotsY[i], str("%.0f" % keyDotsLabels[i])+' nL', c = 'k', verticalalignment = 'center', fontname = 'inter')
+                plt.text(endMin*1.06, keyDotsY[i], str("%.0f" % keyDotsLabels[i])+' pL', c = 'k', verticalalignment = 'center', fontname = 'inter')
         s = [lab.get_text().split('ber')[-1] for lab in axbig.get_yticklabels()]
         axbig.tick_params(
             axis='y',          # changes apply to the x-axis
