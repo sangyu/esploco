@@ -414,6 +414,7 @@ class esploco(object):
                  ]:
             self.resultsDf[s] = self.resultsDf[s].fillna(0)
         self.resultsDf['Latency_min'] = self.resultsDf['Latency_min'].fillna(120)
+        self.resultsDf = self.resultsDf.rename(columns = {'Starvedhrs_x': 'Starved hrs', 'Starvedhrs_y': 'Starvedhrs'})
         self.monitorMin = str(int(monitorWindow/60))+' min'
         self.outputPrefix = self.outputFolder+self.monitorMin
         if plotDiagonal:
@@ -560,7 +561,7 @@ class esploco(object):
         if bubbleLegend:
             for i in range(len(keyDots)):
                 plt.plot(endMin*1.04, keyDotsY[i], '.', markersize = dotbase+dotratio*keyDots[i], c = 'k', alpha = dotalpha)
-                plt.text(endMin*1.06, keyDotsY[i], str("%.0f" % keyDotsLabels[i])+' nL', c = 'k', verticalalignment = 'center', fontname = 'inter')
+                plt.text(endMin*1.06, keyDotsY[i], str("%.0f" % keyDotsLabels[i])+' pL', c = 'k', verticalalignment = 'center', fontname = 'inter')
         s = [lab.get_text().split('ber')[-1] for lab in axbig.get_yticklabels()]
         axbig.tick_params(
             axis='y',          # changes apply to the x-axis

@@ -450,6 +450,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     locoUtilities.endProgressbar()
     feedsRevisedDf['revisedFeedDuration_min'] = feedsRevisedDf['revisedFeedDuration_s']/60
     feedsRevisedDf['FeedVol_pl'] = feedsRevisedDf['FeedVol_nl']*1000
+    feedsRevisedDf = feedsRevisedDf.rename(columns = {'Starved hrs': 'Starvedhrs'})
     grouped_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID'])
     mean_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).mean(numeric_only=True)
     total_df = feedsRevisedDf.groupby(['ChamberID', 'countLogID']).sum(numeric_only=True)
@@ -480,7 +481,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
                                             str(monitorWindow)+'afterPercSpeedGain_Total', 
                                             'FeedSpeed_nl/s_Total', 
                                             'RelativeTime_s_Total', 
-                                            'Starved hrs_Total', 
+                                            'Starvedhrs_Total', 
                                             str(monitorWindow)+'beforeFeedSpeed_mm/s_Total', 
                                             'duringFeedSpeed_mm/s_Total', 
                                             str(monitorWindow)+'afterFeedSpeed_mm/s_Total',
@@ -491,7 +492,7 @@ def calculatePeriFeedLoco(countLogDf, companionPortLocationsDf, companionEspObj,
     mealSizeColumn = [i for  i, s in enumerate(feedResults.columns) if ('AverageFeedVolumePerFly_' in s) & ('Mean' in s )][0]
     feedResults['Latency_s'] = feedResults['Latency_s']/60
     feedResults = feedResults.rename(
-        columns = {'Starved hrs_Mean':'Starved hrs',
+        columns = {'Starvedhrs_Mean':'Starvedhrs',
                    feedResults.columns[mealSizeColumn]:'MealSizePerFly_µL',
                    str(monitorWindow)+'beforeFeedSpeed_mm/s_Mean': 'MeanSpeed'+str(monitorWindow)+'sBeforeFeed_mm/s',
                    'duringFeedSpeed_mm/s_Mean': 'MeanSpeedDuringFeed_mm/s',
