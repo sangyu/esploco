@@ -1,0 +1,227 @@
+[
+  {
+    "objectID": "Tutorials/01 Tutorial.html",
+    "href": "Tutorials/01 Tutorial.html",
+    "title": "esploco",
+    "section": "",
+    "text": "Download a demo dataset from here\nImport libraries\n\n\n# from esploco import esploco\n# from espresso import espresso\n# import warnings\n# warnings.simplefilter('ignore')\n\nHint: to see the function signature of any function or method, type function?\n\n# esploco.esploco?\n\n\n# esplocoPath='/Users/sangyuxu/esploco demo'\n# e = espresso(esplocoPath, expt_duration_minutes=120)\n# ele = esploco.esploco(esplocoPath, 0, 120, companionEspObj = e)",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "Tutorials/01 Tutorial.html#how-to-use",
+    "href": "Tutorials/01 Tutorial.html#how-to-use",
+    "title": "esploco",
+    "section": "",
+    "text": "Download a demo dataset from here\nImport libraries\n\n\n# from esploco import esploco\n# from espresso import espresso\n# import warnings\n# warnings.simplefilter('ignore')\n\nHint: to see the function signature of any function or method, type function?\n\n# esploco.esploco?\n\n\n# esplocoPath='/Users/sangyuxu/esploco demo'\n# e = espresso(esplocoPath, expt_duration_minutes=120)\n# ele = esploco.esploco(esplocoPath, 0, 120, companionEspObj = e)",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "Tutorials/01 Tutorial.html#calculate-peri-feed-speeds",
+    "href": "Tutorials/01 Tutorial.html#calculate-peri-feed-speeds",
+    "title": "esploco",
+    "section": "Calculate peri-feed speeds",
+    "text": "Calculate peri-feed speeds\n\n# ele.calculatePeriFeedSpeed(e, monitorWindow=120)\n# ele.resultsDf.columns\n\nIndex(['ChamberID', 'countLogID', 'AviFile', 'ExperimentState', 'Tube1',\n       'startMonitorIdx', 'startFeedIdx', 'startFeedIdxRevised', 'endFeedIdx',\n       'endFeedIdxRevised', 'endMonitorIdx', 'Latency_min', 'Starved hrs',\n       'MealSizePerFly_µL', 'AverageFeedSpeedPerFly_µl/s',\n       'MeanSpeed120sBeforeFeed_mm/s', 'MeanSpeedDuringFeed_mm/s',\n       'MeanSpeed120sAfterFeed_mm/s', 'MeanMealDurationPerFly_s',\n       'AverageFeedVolumePerFly_µl', 'AverageFeedCountPerFly',\n       'AverageFeedDurationPerFly_min', 'FeedVol_pl', 'duringBeforeSpeedRatio',\n       'afterBeforeSpeedRatio', 'ID', 'Status', 'Genotype', 'Sex',\n       'MinimumAge', 'MaximumAge', 'Food1', 'Food2', 'Temperature', '#Flies',\n       'Starvedhrs', 'Date', 'averageSpeed_mm/s', 'xPosition_mm',\n       'yPosition_mm', 'inLeftPort', 'inRightPort', 'countLogDate',\n       'feedLogDate', 'falls'],\n      dtype='object')",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "Tutorials/01 Tutorial.html#calculate-falls",
+    "href": "Tutorials/01 Tutorial.html#calculate-falls",
+    "title": "esploco",
+    "section": "Calculate falls",
+    "text": "Calculate falls\n\n# ele.calculateFallEvents()\n\nDetecting Fall Events...\n\n[------]\nDone",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "Tutorials/01 Tutorial.html#stacked-plot-for-feeds-and-other-metrics",
+    "href": "Tutorials/01 Tutorial.html#stacked-plot-for-feeds-and-other-metrics",
+    "title": "esploco",
+    "section": "Stacked plot for feeds and other metrics",
+    "text": "Stacked plot for feeds and other metrics\n\n# Fstacked, feeds_sorted, colorBy = ele.plotStacked(endMin = 120, \n#                           colorBy = ['Status', 'Temperature'], \n#                           metricsToStack = ['Volume', 'Speed'], \n#                           figsize = None,\n#                           plotNonFeeders=False, \n#                           showRasterYticks=False, \n#                          ylimPresets = None)\n\n# # consult the function signature for different configurations of input arguments",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "Tutorials/01 Tutorial.html#plotting-small-multiples",
+    "href": "Tutorials/01 Tutorial.html#plotting-small-multiples",
+    "title": "esploco",
+    "section": "Plotting small multiples",
+    "text": "Plotting small multiples\n\n# ele.plotChamberSmallMultiples()\n\nEspresso Runs found:\n\n['2019-04-03_12-01-45' '2019-04-27_17-20-05']\n\n\n plotting 2019-04-03_12-01-45...\n\n\n plotting 2019-04-27_17-20-05...\n\n\n(array([&lt;Figure size 720x144 with 30 Axes&gt;,\n        &lt;Figure size 720x144 with 30 Axes&gt;], dtype=object),\n array([&lt;Figure size 720x144 with 30 Axes&gt;,\n        &lt;Figure size 720x144 with 30 Axes&gt;], dtype=object))",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "Tutorials/01 Tutorial.html#mean-heat-maps",
+    "href": "Tutorials/01 Tutorial.html#mean-heat-maps",
+    "title": "esploco",
+    "section": "Mean heat maps",
+    "text": "Mean heat maps\n\nPlot mean heatmaps with seconds as unit\n\n# meanheatmaps = ele.plotMeanHeatMaps(row = 'Status', col = 'Temperature')\n\n&lt;Figure size 360x748.8 with 0 Axes&gt;\n\n\n\n\n\n\n\n\n\n\n\nPlot mean heatmaps with z-score\n\n# meanheatmaps = ele.plotMeanHeatMaps(row = 'Status', col = 'Temperature', plotZScore = True)\n\n&lt;Figure size 360x748.8 with 0 Axes&gt;\n\n\n\n\n\n\n\n\n\n\n\nPlot mean heatmaps with arbitrary vmin and vmax\n\n# meanheatmaps = ele.plotMeanHeatMaps(row = 'Status', col = 'Temperature', plotZScore = True, vmin = 0.2, vmax = 0.6)\n\n&lt;Figure size 360x748.8 with 0 Axes&gt;",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "Tutorials/01 Tutorial.html#ribbon-plots",
+    "href": "Tutorials/01 Tutorial.html#ribbon-plots",
+    "title": "esploco",
+    "section": "Ribbon Plots",
+    "text": "Ribbon Plots\n\n# ribbonplot = ele.plotBoundedLines(locoSuffix = 'V', col = 'Temperature', colorBy = 'Status')",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "Tutorials/01 Tutorial.html#contrast-plots",
+    "href": "Tutorials/01 Tutorial.html#contrast-plots",
+    "title": "esploco",
+    "section": "Contrast plots",
+    "text": "Contrast plots\n\nContrast plots can be made for any of the metrics in .resultsDf:\n\n‘MeanSpeed120sBeforeFeed_mm/s’,\n‘MeanSpeedDuringFeed_mm/s’,\n‘MeanSpeed120sAfterFeed_mm/s’,\n‘MeanMealDurationPerFly_s’,\n‘AverageFeedVolumePerFly_µl’,\n‘AverageFeedCountPerFly’,\n‘AverageFeedDuration_min’,\n‘MealSizePerFly_µL’,\n‘AverageFeedSpeedPerFly_µl/s’,\n‘FeedVol_pl’,\n‘Latency_min’,\n‘duringBeforeSpeedRatio’,\n‘afterBeforeSpeedRatio’,\n‘averageSpeed_mm/s’,\n‘xPosition_mm’,\n‘yPosition_mm’,\n‘inLeftPort’,\n‘inRightPort’,\n\n\n\nThe following other fields in .resultsDf can be used as independent variables.\n\n‘ChamberID’,\n‘Starved hrs’,\n‘ID’,\n‘Status’,\n‘Genotype’,\n‘Sex’,\n‘MinimumAge’,\n‘MaximumAge’,\n‘Food1’,\n‘Food2’,\n‘Temperature’,\n‘#Flies’,\n‘Starvedhrs’,\n‘Date’,\n‘countLogDate’,\n‘feedLogDate’\n\n\n# import dabest\n# print(dabest.__version__)\n\n# contrast = dabest.load(data = ele.resultsDf, \n#                        x = ['Temperature', 'Genotype'], \n#                        y = 'AverageFeedVolumePerFly_µl', \n#                        experiment = 'Status', x1_level=['Red Light Off', 'Red Light On'] , delta2 = True)\n# f = contrast.mean_diff.plot()\n# f.axes[0].set_xticklabels(['Ctrl Off', 'Ctrl On', 'Test Off', 'Test On'])\n# f.axes[1].set_xticklabels(['', 'Ctrl Δ', '', 'Test Δ', '', 'ΔΔ'])\n\n2024.03.29\n\n\n[Text(0, 0, ''),\n Text(1, 0, 'Ctrl Δ'),\n Text(2, 0, ''),\n Text(3, 0, 'Test Δ'),\n Text(4, 0, ''),\n Text(5, 0, 'ΔΔ')]",
+    "crumbs": [
+      "Tutorials",
+      "How to use"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "esploco",
+    "section": "",
+    "text": "On 12 Dec 2023, esploco v23.12.12 was updated to include the following new features:\n\nCompatibility with dabest dev v2023.3.29 pandas 1.5.0, numpy 1.22.3, seaborn 0.12.0 and matplotlib 3.4.3\nExperimental end time definition for esploco.calculatePeriFeedSpeed function",
+    "crumbs": [
+      "esploco"
+    ]
+  },
+  {
+    "objectID": "index.html#recent-version-update",
+    "href": "index.html#recent-version-update",
+    "title": "esploco",
+    "section": "",
+    "text": "On 12 Dec 2023, esploco v23.12.12 was updated to include the following new features:\n\nCompatibility with dabest dev v2023.3.29 pandas 1.5.0, numpy 1.22.3, seaborn 0.12.0 and matplotlib 3.4.3\nExperimental end time definition for esploco.calculatePeriFeedSpeed function",
+    "crumbs": [
+      "esploco"
+    ]
+  },
+  {
+    "objectID": "index.html#contents",
+    "href": "index.html#contents",
+    "title": "esploco",
+    "section": "Contents",
+    "text": "Contents\n\n\nAbout\nInstallation\nAcknowledgements",
+    "crumbs": [
+      "esploco"
+    ]
+  },
+  {
+    "objectID": "index.html#about",
+    "href": "index.html#about",
+    "title": "esploco",
+    "section": "About",
+    "text": "About\nesploco is a package that analyses the locomotion data generated by Espresso.",
+    "crumbs": [
+      "esploco"
+    ]
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "esploco",
+    "section": "Installation",
+    "text": "Installation\nThis package is tested on Python 3.7.\nYou can install this package via pip.\nTo install, at the command line, change directory to the folder “esploco” and then run\npip install .",
+    "crumbs": [
+      "esploco"
+    ]
+  },
+  {
+    "objectID": "index.html#acknowledgements",
+    "href": "index.html#acknowledgements",
+    "title": "esploco",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nAlpha tester Xianyuan Zhang.",
+    "crumbs": [
+      "esploco"
+    ]
+  },
+  {
+    "objectID": "API/esploco.html",
+    "href": "API/esploco.html",
+    "title": "esploco",
+    "section": "",
+    "text": "source\n\nesploco\n\n esploco (dataFolder, startMin=0, endMin=120, companionEspObj=None,\n          initialResamplePeriod=50, smoothing=True, longForm=False)\n\nClass for calculating and plotting espresso locomotion data.",
+    "crumbs": [
+      "API",
+      "esploco"
+    ]
+  },
+  {
+    "objectID": "API/locodatamunger.html",
+    "href": "API/locodatamunger.html",
+    "title": "locoDataMunger",
+    "section": "",
+    "text": "source\n\nextractDateStr\n\n extractDateStr (s)\n\n\nsource\n\n\nreadMetaAndCount\n\n readMetaAndCount (dataFolder, companionEspObj, startMin, endMin,\n                   initialResamplePeriod, smoothing, longForm=False)\n\nReads the MetaDatas, CountLogs, FeedLogs, PortLocations from the path provided\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ndataFolder\nstr\n\npath to folder that contains all the relevant data files.\n\n\ncompanionEspObj\ndata object\n\ncalculated from espresso package.\n\n\nstartMin\nint,\n\nthe starting minute for the period to be included in the analysis.\n\n\nendMin\nint\n\nthe ending minute for the period to be included in the analysis.\n\n\ninitialResamplePeriod\nint\n\nperiod for resampling functions in milliseconds, default 50.\n\n\nsmoothing\nboolean\n\nparameter for whether or not to smooth the data.\n\n\nlongForm\nbool\nFalse\nparameter to indicate whether or not the multiple data files were from one longitudinal experiment.\n\n\nReturns\npandas dataframe\n\ncontains all the metaData tables.\n\n\n\n\nsource\n\n\ncalculateSpeedinCountLog\n\n calculateSpeedinCountLog (countLogDf, companionPortLocationsDf,\n                           smoothing, speedThreshold=30,\n                           gaussianWindowSize=10, gaussianSTD=3)\n\nCalcualtes speed from data in countLogs\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ncountLogDf\npandas dataframe\n\ncontains all the countLog tables.\n\n\ncompanionPortLocationsDf\npandas dataframe\n\ncontains all of the portLocation tables.\n\n\nsmoothing\n\n\n\n\n\nspeedThreshold\nint\n30\nthreshold to remove data points where speed is deemed too high, default value 30.\n\n\ngaussianWindowSize\nint\n10\nwindow size for gaussian smoothing, default value 10.\n\n\ngaussianSTD\nint\n3\n\n\n\nReturns\npandas dataframe\n\ncontains all updated countLogs, including newly calculated speed.\n\n\n\n\nsource\n\n\ncalculatePeriFeedLoco\n\n calculatePeriFeedLoco (countLogDf, companionPortLocationsDf,\n                        companionEspObj, exptSum, monitorWindow=120,\n                        startMin=0, endMin=120)\n\nCalculates speed around feeds\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ncountLogDf\npandas dataframe\n\ncontains all the countLog tables.\n\n\ncompanionPortLocationsDf\npandas dataframe\n\ncontains all of the portLocation tables.\n\n\ncompanionEspObj\ndata object\n\ncalculated from espresso package.\n\n\nexptSum\n\n\n\n\n\nmonitorWindow\nint\n120\nwindow size in seconds for the period before and after feed for speed to be calculated\n\n\nstartMin\nint\n0\nthe starting minute for the period to be included in the analysis\n\n\nendMin\nint\n120\nthe ending minute for the period to be included in the analysis\n\n\nReturns\npandas dataframe\n\ncontains updated feeds with associated per feed metrics.\n\n\n\n\nsource\n\n\nfallEvents\n\n fallEvents (countLogDf, nstd=4, windowsize=1000, ewm1=12, ewm2=26,\n             ewm3=9)\n\nCalculates fall events\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ncountLogDf\npandas dataframe\n\ncontains all the countLog tables.\n\n\nnstd\nint\n4\nnumber of standards deviations for calculating speed threshold for fall detection, default value 4\n\n\nwindowsize\nint\n1000\nnumber of samples around the fall event for speed threshold to be calculated.\n\n\newm1\nint\n12\n\n\n\newm2\nint\n26\nmoving average analysis parameter 2, default value 26.\n\n\newm3\nint\n9\nmoving average analysis parameter 3, default value 9.\n\n\nReturns\npandas series\n\na list of timestamps where falls happened\n\n\n\n\nsource\n\n\nlabelStretches\n\n labelStretches (vector)\n\n\nsource\n\n\ncorrectInPortData\n\n correctInPortData (countLogDf)\n\n\nsource\n\n\nintrapolateUnderThreshold\n\n intrapolateUnderThreshold (s, th)\n\n\nsource\n\n\nassignStatus\n\n assignStatus (metaDataDf)",
+    "crumbs": [
+      "API",
+      "locoDataMunger"
+    ]
+  },
+  {
+    "objectID": "API/plottools.html",
+    "href": "API/plottools.html",
+    "title": "plotTools",
+    "section": "",
+    "text": "source\n\ncorrelationPlot\n\n correlationPlot (x, y, ax=None)\n\n\nsource\n\n\nsetFont\n\n setFont (fontSelection, fontSize, fontWeight='normal')\n\n\nsource\n\n\nplotContrasts\n\n plotContrasts (df, y, colorBy, compareBy, groupBy='Temperature',\n                reverseCompareBy=False, reverseGroupBy=False,\n                customPalette=None, pairedState=False, fontSize=14,\n                plot_kwargs={})\n\n\nsource\n\n\nsavePlots\n\n savePlots (figure, fileName, figureID='', fDPI=300)\n\n\nsource\n\n\nsaveDabestData\n\n saveDabestData (contrast, fileName, exptDataSource, figureID='', unit='')",
+    "crumbs": [
+      "API",
+      "plotTools"
+    ]
+  },
+  {
+    "objectID": "API/locoutilities.html",
+    "href": "API/locoutilities.html",
+    "title": "locoUtilities",
+    "section": "",
+    "text": "source\n\nmakeOutputFolders\n\n makeOutputFolders (dataFolder)\n\n\nsource\n\n\nresampleCountLog\n\n resampleCountLog (countLogDf, countLogName, resampleFrequencyInMs=50,\n                   longForm=False)\n\n\nsource\n\n\nespressoSaveFig\n\n espressoSaveFig (fig, figName, figDate, figDirectory, pngDPI=300,\n                  tp=True)\n\n\nsource\n\n\nespressoWriteDictToCSV\n\n espressoWriteDictToCSV (filename, dict)\n\n\nsource\n\n\ncheckDabestVersion\n\n checkDabestVersion ()\n\n\nsource\n\n\nendProgressbar\n\n endProgressbar ()\n\n\nsource\n\n\ndrawProgressbar\n\n drawProgressbar ()\n\n\nsource\n\n\nstartProgressbar\n\n startProgressbar ()",
+    "crumbs": [
+      "API",
+      "locoUtilities"
+    ]
+  },
+  {
+    "objectID": "API/locoplotters.html",
+    "href": "API/locoplotters.html",
+    "title": "locoPlotters",
+    "section": "",
+    "text": "source\n\nespressoChamberStyling\n\n espressoChamberStyling (ax, axisSwitch='off')\n\n\nsource\n\n\nespressoCreatePalette\n\n espressoCreatePalette (items, testColor='orangered')\n\n\nsource\n\n\nespressoPlotTracking\n\n espressoPlotTracking (X, Y, flyName, colorPalette)\n\n\nsource\n\n\nespressoPlotHeatmap\n\n espressoPlotHeatmap (X, Y, flyGenotype, colorPalette)\n\n\nsource\n\n\nespressoPlotMeanHeatmaps\n\n espressoPlotMeanHeatmaps (espLocoObj, binSize, row, col, reverseRows,\n                           reverseCols, verbose, heatmapCMap, smooth,\n                           plotZScore, vmin=None, vmax=None)\n\n\nsource\n\n\nplotBoundedLine\n\n plotBoundedLine (x, Y, ax=None, c='k', resamplePeriod='200s',\n                  aggMethod='mean', label='')\n\n\nsource\n\n\nputThingsInToChamberSubplot\n\n putThingsInToChamberSubplot (countLogDf, metaDataDf, portLocationsDf,\n                              customPalette, ncol, plotFunc=&lt;function\n                              espressoPlotTracking&gt;, showID=False)\n\n\nsource\n\n\nplotChamber\n\n plotChamber (ploc, ax)\n\n\nsource\n\n\nsubplotRowColColor\n\n subplotRowColColor (metaDataDf, colorBy, row, col, reverseRows,\n                     reverseCols)\n\n\nsource\n\n\nplotPeriFeedDiagonal\n\n plotPeriFeedDiagonal (locoObj, monitorWindow)\n\n\nsource\n\n\nplotPairedSpeeds\n\n plotPairedSpeeds (locoObj, monitorWindow)\n\n\nsource\n\n\ncreateWesAndersonPalette\n\n createWesAndersonPalette ()\n\n\nsource\n\n\nsetAxesTicks\n\n setAxesTicks (ax, axesState, gridState=False)",
+    "crumbs": [
+      "API",
+      "locoPlotters"
+    ]
+  },
+  {
+    "objectID": "Tutorials/02 main functions.html",
+    "href": "Tutorials/02 main functions.html",
+    "title": "API",
+    "section": "",
+    "text": "from nbdev.showdoc import *\nfrom esploco import esploco\n\n\nsource\n\nesploco.__init__\n\n esploco.__init__ (dataFolder, startMin=0, endMin=120,\n                   companionEspObj=None, initialResamplePeriod=50,\n                   smoothing=True, longForm=False)\n\nReads and stores information from countLogs produced by Critta espresso plugin\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ndataFolder\nstr\n\npath to the directory containing all output files of espresso assay\n\n\nstartMin\nint\n0\nstarting minute for analysis\n\n\nendMin\nint\n120\nending minute for analysis\n\n\ncompanionEspObj\nNoneType\nNone\nfrom the espresso analysis package\n\n\ninitialResamplePeriod\nint\n50\nperiod of sample in ms (initialResamplePeriod = 50 ms, sampling frequency = 1000/50 = 20 Hz), default 50\n\n\nsmoothing\nbool\nTrue\nwhether or not to smooth the trajectories, default True\n\n\nlongForm\nbool\nFalse\nwhether or not the data input is the same set of flies but over many days.\n\n\nReturns\nesploco object\n\nesploco.resultsDf : contains relevant output metrics esploco.resultsDf.ID : from metadataesploco.resultsDf.Status : ‘Test’ or ‘Ctrl’esploco.resultsDf.Genotype : genotypeesploco.resultsDf.Sex : from metadataesploco.resultsDf.MinimumAge : from metadataesploco.resultsDf.MaximumAge : from metadata esploco.resultsDf.Food1 : from metadataesploco.resultsDf.Food2 : from metadata esploco.resultsDf.Temperature : from metadata esploco.resultsDf.#Flies : from metadata esploco.resultsDf.Starvedhrs : from metadata esploco.resultsDf.Date : date of feedlogesploco.resultsDf.averageSpeed_mm/s : instantaneous speed of the fly esploco.resultsDf.xPosition_mm : instantaneous x position of the fly esploco.resultsDf.yPosition_mm : instantaneous y position of the fly esploco.resultsDf.inLeftPort : proportion of time the fly was in left portesploco.resultsDf.inRightPort : proportion of time the fly was in right port esploco.resultsDf.countLogDate : date from countlogesploco.resultsDf.feedLogDate : date from feedlog\n\n\n\n\nsource\n\n\nesploco.calculatePeriFeedSpeed\n\n esploco.calculatePeriFeedSpeed (companionEspObj, monitorWindow=120,\n                                 startSeconds=0, plotDiagonal=True,\n                                 plotContrast=True)\n\nCalculates speed of the fly around a feed\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ncompanionEspObj\nobject, default None\n\nfrom the espresso analysis package\n\n\nmonitorWindow\nint\n120\nsize of the window in seconds before and after the feed to monitor speed in\n\n\nstartSeconds\nint\n0\nlower range of data to analyse, deprecated in v.23.12.11\n\n\nplotDiagonal\nbool\nTrue\nwhether or not to plot the diagonal speed plot\n\n\nplotContrast\nbool\nTrue\nwhether or not to plot the contrast plots\n\n\nReturns\nesploco.feedsRevisedDf\n\npandas dataframe that contains individual feeds and info about them in a time series.\n\n\n\n\nsource\n\n\nesploco.calculateFallEvents\n\n esploco.calculateFallEvents (nstd=4, windowsize=1000, ewm1=12, ewm2=26,\n                              ewm3=9)\n\nDetects fall events\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nnstd\nint\n4\nparameter in macd analysis\n\n\nwindowsize\nint\n1000\nwindow size in macd analysis\n\n\newm1\nint\n12\nparameter in macd analysis\n\n\newm2\nint\n26\nparameter in macd analysis\n\n\newm3\nint\n9\nparameter in macd analysis\n\n\nReturns\nself.resultsDf\n\nupdated to include falls\n\n\n\n\nsource\n\n\nesploco.plotStacked\n\n esploco.plotStacked (endMin=120, metricsToStack=['Volume', 'Speed'],\n                      colorBy='Genotype', plotTitle='',\n                      customPalette=None, figsize=None,\n                      plotNonFeeders=True, dotratio=20, dotbase=5,\n                      dotalpha=0.4, bubbleYLabelSize=12, ylimPresets=None,\n                      showRasterYticks=False, ribbonLegend=False,\n                      bubbleLegend=True)\n\nPlots a raster of feeds stacked with a selection of other metrics in a ribbon\n\nsource\n\n\nesploco.plotChamberSmallMultiples\n\n esploco.plotChamberSmallMultiples (ncol=15, customPalette=None,\n                                    setNumber=None)\n\nPlots trajectories and or heatmaps in the arrangement of the chambers for each dataset\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nncol\nint\n15\nnumber of columns for the plots.\n\n\ncustomPalette\nNoneType\nNone\nuser can supply a dict for use as a custom palette.\n\n\nsetNumber\nNoneType\nNone\nuser specfied set to plot.\n\n\nReturns\nchamberSmallsTrack\n\nfigure object.\n\n\n\n\nsource\n\n\nesploco.plotMeanHeatMaps\n\n esploco.plotMeanHeatMaps (binSize=0.2, row=None, col=None,\n                           reverseRows=False, reverseCols=False,\n                           verbose=False, heatmapCMap='RdYlBu_r',\n                           smooth=2, plotZScore=False, vmin=None,\n                           vmax=None)\n\nPlots heatmap of mean duration stayed at each location throughout the chamber grouped by criteria\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nbinSize\nfloat\n0.2\nthe size of the pixel in the heatmap\n\n\nrow\nNoneType\nNone\na column name or independent variable to use for grouping the rows\n\n\ncol\nNoneType\nNone\na column name or independent variable to use for grouping the columns\n\n\nreverseRows\nbool\nFalse\nto reverse the order of the rows\n\n\nreverseCols\nbool\nFalse\nto reverse the order of the columns\n\n\nverbose\nbool\nFalse\nto produce output\n\n\nheatmapCMap\nstr\nRdYlBu_r\ncolormap used for the heatmap\n\n\nsmooth\nint\n2\nthis defines how much smoothing happenes in with the Gaussian Kernel.\n\n\nplotZScore\nbool\nFalse\nthis toggles between plotting raw heatmap in seconds and z-score\n\n\nvmin\nNoneType\nNone\nthis forces the vmin on the heatmap color scale\n\n\nvmax\nNoneType\nNone\nthis forces the vmax on the heatmap color scale\n\n\nReturns\nmeanHeatmapFig\n\nfigure object.",
+    "crumbs": [
+      "Tutorials",
+      "API"
+    ]
+  }
+]

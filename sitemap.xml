@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://sangyu.github.io/esploco/Tutorials/01 Tutorial.html</loc>
+    <lastmod>2024-12-20T02:17:00.751Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sangyu.github.io/esploco/index.html</loc>
+    <lastmod>2024-12-20T02:17:00.467Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sangyu.github.io/esploco/API/esploco.html</loc>
+    <lastmod>2024-12-20T02:17:00.695Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sangyu.github.io/esploco/API/locodatamunger.html</loc>
+    <lastmod>2024-12-20T02:17:00.759Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sangyu.github.io/esploco/API/plottools.html</loc>
+    <lastmod>2024-12-20T02:17:00.527Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sangyu.github.io/esploco/API/locoutilities.html</loc>
+    <lastmod>2024-12-20T02:17:00.507Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sangyu.github.io/esploco/API/locoplotters.html</loc>
+    <lastmod>2024-12-20T02:17:00.823Z</lastmod>
+  </url>
+  <url>
+    <loc>https://sangyu.github.io/esploco/Tutorials/02 main functions.html</loc>
+    <lastmod>2024-12-20T02:17:00.743Z</lastmod>
+  </url>
+</urlset>
