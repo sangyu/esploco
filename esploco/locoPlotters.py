@@ -253,7 +253,7 @@ def espressoPlotMeanHeatmaps(espLocoObj, binSize,row, col, reverseRows, reverseC
     for i, im in enumerate(images):
         im.set_norm(norm)
         if i > 0:
-            images[0].callbacksSM.connect('changed', ImageFollower(im))
+            images[0].callbacks.connect('changed', ImageFollower(im))
     meanHeatmapFig.colorbar(images[-1], cax=cax, orientation = 'horizontal')
     plt.show()
     meanHeatmapFileName = 'meanHeatmapFig'+ '_' + str(col) + '_' + str(row) + str(espLocoObj.startMin) + '-' + str(espLocoObj.endMin) + 'min'
